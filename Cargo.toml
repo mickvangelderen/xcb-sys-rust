@@ -1,0 +1,15 @@
+[package]
+name = "xcb-sys"
+version = "0.1.0"
+authors = ["Mick van Gelderen <mickvangelderen@gmail.com>"]
+edition = "2018"
+build = "build/build.rs"
+
+[dependencies]
+x11 = { version = "*", features = ["xlib_xcb"] }
+
+[build-dependencies]
+serde = "*"
+serde_derive = "*"
+serde-xml-rs = "*"
+

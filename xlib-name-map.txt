@@ -1,0 +1,12 @@
+ATOM Atom
+COLORMAP Colormap
+CURSOR Cursor
+DRAWABLE Drawable
+FONT Font
+GCONTEXT GContext
+KEYCODE KeyCode
+KEYSYM KeySym
+PIXMAP Pixmap
+TIME Time
+VISUALID VisualID
+WINDOW Window
