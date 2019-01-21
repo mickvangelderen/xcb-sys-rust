@@ -134,12 +134,20 @@ use std::mem;
         write_xidunion(&mut out, &extra, &xidunion).unwrap();
     }
 
+    for union in root.items.iter().filter_map(xproto::RootItem::as_union) {
+        write_union(&mut out, &extra, &union).unwrap();
+    }
+
     for enum_ in root.items.iter().filter_map(xproto::RootItem::as_enum) {
         write_enum(&mut out, &extra, &enum_).unwrap();
     }
 
     for struct_ in root.items.iter().filter_map(xproto::RootItem::as_struct) {
         write_struct(&mut out, &extra, &struct_).unwrap();
+    }
+
+    for event in root.items.iter().filter_map(xproto::RootItem::as_event) {
+        write_event(&mut out, &extra, &event).unwrap();
     }
 }
 
@@ -191,8 +199,32 @@ pub union {name} {{"##,
     }
     writeln!(
         out,
-        r"}}
-"
+        r##"}}
+"##,
+    )?;
+    Ok(())
+}
+
+fn write_union<W: io::Write>(
+    out: &mut W,
+    extra: &Extra,
+    union: &xproto::Union,
+) -> io::Result<()> {
+    let union_name = extra.get_xcb_type_name(&union.name);
+    writeln!(
+        out,
+        r##"#[repr(C)]
+pub union {name} {{"##,
+        name = union_name
+    )?;
+    for item in &union.items {
+        let ty = extra.get_xcb_type_name(&item.ty);
+        writeln!(out, "    pub {name}: [{ty}; {count}],", ty = ty, name = item.name, count = item.count)?;
+    }
+    writeln!(
+        out,
+        r##"}}
+"##,
     )?;
     Ok(())
 }
@@ -290,6 +322,83 @@ pub struct {name} {{"##,
         out,
         r##"}}
 "##
+    )?;
+    Ok(())
+}
+
+fn write_event<W: io::Write>(out: &mut W, extra: &Extra, event: &xproto::Event) -> io::Result<()> {
+    let opcode_name = format!("XCB_{}", event.name.to_shouty_snake_case());
+    let event_name = format!("xcb_{}_event_t", event.name.to_snake_case());
+    let mut pad_index = 0;
+
+    writeln!(
+        out,
+        r##"const {opcode_name}: u8 = {opcode};
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct {event_name} {{"##,
+        opcode_name = opcode_name,
+        opcode = event.opcode,
+        event_name = event_name,
+    )?;
+
+    for item in event.items.iter() {
+        match item {
+            xproto::EventItem::Field(field) => {
+                // NOTE(mickvangelderen): Don't want to make a file and hash map
+                // and everything just for this one exception.
+                // TODO(mickvangelderen): Should have one function somewhere to
+                // determine the identifier for a type, a field name, etc.
+                let field_name = if field.name == "type" {
+                    "ty"
+                } else {
+                    &field.name
+                };
+
+                let field_ty = extra.get_xcb_type_name(&field.ty);
+                writeln!(
+                    out,
+                    "    pub {name}: {ty},",
+                    name = field_name,
+                    ty = field_ty,
+                )?;
+            }
+            xproto::EventItem::Pad(pad) => {
+                if let Some(ref bytes) = pad.bytes {
+                    writeln!(
+                        out,
+                        "    pub _pad{index}: [u8; {bytes}],",
+                        index = pad_index,
+                        bytes = bytes
+                    )?;
+                    pad_index += 1;
+                }
+                if let Some(_) = pad.align {
+                    // NOTE(mickvangelderen): align property is not documented
+                    // in the xproto xml specification and it seems like the
+                    // padding already properly aligns the fields. Could verify
+                    // this but that would mean recursively determining the
+                    // sizes of the fields which would make this script a lot
+                    // more complicated.
+                    println!("cargo:warning=Ignored align on {}", event_name);
+                }
+            }
+            xproto::EventItem::List(_) => {
+                // TODO: Do something with list?
+                writeln!(out, "    // list")?;
+            }
+            xproto::EventItem::Doc(_) => {
+                // NOTE(mickvangelderen): For now just refer to the not so great
+                // c documentation.
+            }
+        }
+    }
+
+    writeln!(
+        out,
+        r"}}
+"
     )?;
     Ok(())
 }

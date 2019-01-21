@@ -41,9 +41,18 @@ impl RootItem {
         }
     }
 
+    #[inline]
     pub fn as_xidunion(&self) -> Option<&XIDUnion> {
         match *self {
             RootItem::XIDUnion(ref x) => Some(x),
+            _ => None,
+        }
+    }
+
+    #[inline]
+    pub fn as_union(&self) -> Option<&Union> {
+        match *self {
+            RootItem::Union(ref x) => Some(x),
             _ => None,
         }
     }
@@ -68,6 +77,14 @@ impl RootItem {
     pub fn as_struct(&self) -> Option<&Struct> {
         match *self {
             RootItem::Struct(ref x) => Some(x),
+            _ => None,
+        }
+    }
+
+    #[inline]
+    pub fn as_event(&self) -> Option<&Event> {
+        match *self {
+            RootItem::Event(ref x) => Some(x),
             _ => None,
         }
     }
@@ -149,13 +166,48 @@ pub enum VariantItem {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Event {}
+pub struct Event {
+    pub name: String,
+    #[serde(rename = "number")]
+    pub opcode: u8,
+    #[serde(rename = "$value")]
+    pub items: Vec<EventItem>,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum EventItem {
+    #[serde(rename = "field")]
+    Field(Field),
+    #[serde(rename = "pad")]
+    Pad(Pad),
+    #[serde(rename = "list")]
+    List(List),
+    #[serde(rename = "doc")]
+    Doc(Doc),
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Doc {}
 
 #[derive(Debug, Deserialize)]
 pub struct EventCopy {}
 
 #[derive(Debug, Deserialize)]
-pub struct Union {}
+pub struct Union {
+    pub name: String,
+    #[serde(rename = "list")]
+    pub items: Vec<UnionItem>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UnionItem {
+    #[serde(rename = "type")]
+    pub ty: String,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(rename = "value")]
+    pub count: usize
+}
 
 #[derive(Debug, Deserialize)]
 pub struct Error {}
