@@ -103,6 +103,12 @@ use x11::xlib;
 
     writeln!(out).unwrap();
 
+    for enum_ in root.items.iter().filter_map(xproto::RootItem::as_enum) {
+        write_enum(&mut out, &extra, &enum_).unwrap();
+    }
+
+    writeln!(out).unwrap();
+
     for struct_ in root.items.iter().filter_map(xproto::RootItem::as_struct) {
         write_struct(&mut out, &extra, &struct_).unwrap();
     }
@@ -159,6 +165,22 @@ pub union {name} {{"##,
         r"}}
 "
     )?;
+    Ok(())
+}
+
+fn write_enum<W: io::Write>(
+    out: &mut W,
+    extra: &Extra,
+    enum_: &xproto::Enum,
+) -> io::Result<()> {
+    writeln!(
+        out,
+        r##"#[repr(u32)]
+pub enum {name} {{"##,
+        name = extra.get_xcb_name(&enum_.name),
+    )?;
+    writeln!(out, r"}}
+")?;
     Ok(())
 }
 

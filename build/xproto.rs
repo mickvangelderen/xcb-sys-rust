@@ -49,6 +49,14 @@ impl RootItem {
     }
 
     #[inline]
+    pub fn as_enum(&self) -> Option<&Enum> {
+        match *self {
+            RootItem::Enum(ref x) => Some(x),
+            _ => None,
+        }
+    }
+
+    #[inline]
     pub fn as_typedef(&self) -> Option<&Typedef> {
         match *self {
             RootItem::Typedef(ref x) => Some(x),
@@ -119,7 +127,26 @@ pub struct Typedef {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Enum {}
+pub struct Enum {
+    pub name: String,
+    #[serde(rename = "item")]
+    pub variants: Vec<Variant>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Variant {
+    pub name: String,
+    #[serde(rename = "$value")]
+    pub item: VariantItem,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum VariantItem {
+    #[serde(rename = "value")]
+    Value(String),
+    #[serde(rename = "bit")]
+    Bit(String),
+}
 
 #[derive(Debug, Deserialize)]
 pub struct Event {}

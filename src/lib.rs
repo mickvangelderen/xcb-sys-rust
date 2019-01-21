@@ -32,6 +32,287 @@ pub union xcb_fontable_t {
 }
 
 
+#[repr(u32)]
+pub enum VisualClass {
+}
+
+#[repr(u32)]
+pub enum EventMask {
+}
+
+#[repr(u32)]
+pub enum BackingStore {
+}
+
+#[repr(u32)]
+pub enum ImageOrder {
+}
+
+#[repr(u32)]
+pub enum ModMask {
+}
+
+#[repr(u32)]
+pub enum KeyButMask {
+}
+
+#[repr(u32)]
+pub enum Window {
+}
+
+#[repr(u32)]
+pub enum ButtonMask {
+}
+
+#[repr(u32)]
+pub enum Motion {
+}
+
+#[repr(u32)]
+pub enum NotifyDetail {
+}
+
+#[repr(u32)]
+pub enum NotifyMode {
+}
+
+#[repr(u32)]
+pub enum Visibility {
+}
+
+#[repr(u32)]
+pub enum Place {
+}
+
+#[repr(u32)]
+pub enum Property {
+}
+
+#[repr(u32)]
+pub enum Time {
+}
+
+#[repr(u32)]
+pub enum Atom {
+}
+
+#[repr(u32)]
+pub enum ColormapState {
+}
+
+#[repr(u32)]
+pub enum Colormap {
+}
+
+#[repr(u32)]
+pub enum Mapping {
+}
+
+#[repr(u32)]
+pub enum WindowClass {
+}
+
+#[repr(u32)]
+pub enum CW {
+}
+
+#[repr(u32)]
+pub enum BackPixmap {
+}
+
+#[repr(u32)]
+pub enum Gravity {
+}
+
+#[repr(u32)]
+pub enum MapState {
+}
+
+#[repr(u32)]
+pub enum SetMode {
+}
+
+#[repr(u32)]
+pub enum ConfigWindow {
+}
+
+#[repr(u32)]
+pub enum StackMode {
+}
+
+#[repr(u32)]
+pub enum Circulate {
+}
+
+#[repr(u32)]
+pub enum PropMode {
+}
+
+#[repr(u32)]
+pub enum GetPropertyType {
+}
+
+#[repr(u32)]
+pub enum SendEventDest {
+}
+
+#[repr(u32)]
+pub enum GrabMode {
+}
+
+#[repr(u32)]
+pub enum GrabStatus {
+}
+
+#[repr(u32)]
+pub enum Cursor {
+}
+
+#[repr(u32)]
+pub enum ButtonIndex {
+}
+
+#[repr(u32)]
+pub enum Grab {
+}
+
+#[repr(u32)]
+pub enum Allow {
+}
+
+#[repr(u32)]
+pub enum InputFocus {
+}
+
+#[repr(u32)]
+pub enum FontDraw {
+}
+
+#[repr(u32)]
+pub enum GC {
+}
+
+#[repr(u32)]
+pub enum GX {
+}
+
+#[repr(u32)]
+pub enum LineStyle {
+}
+
+#[repr(u32)]
+pub enum CapStyle {
+}
+
+#[repr(u32)]
+pub enum JoinStyle {
+}
+
+#[repr(u32)]
+pub enum FillStyle {
+}
+
+#[repr(u32)]
+pub enum FillRule {
+}
+
+#[repr(u32)]
+pub enum SubwindowMode {
+}
+
+#[repr(u32)]
+pub enum ArcMode {
+}
+
+#[repr(u32)]
+pub enum ClipOrdering {
+}
+
+#[repr(u32)]
+pub enum CoordMode {
+}
+
+#[repr(u32)]
+pub enum PolyShape {
+}
+
+#[repr(u32)]
+pub enum ImageFormat {
+}
+
+#[repr(u32)]
+pub enum ColormapAlloc {
+}
+
+#[repr(u32)]
+pub enum ColorFlag {
+}
+
+#[repr(u32)]
+pub enum Pixmap {
+}
+
+#[repr(u32)]
+pub enum Font {
+}
+
+#[repr(u32)]
+pub enum QueryShapeOf {
+}
+
+#[repr(u32)]
+pub enum KB {
+}
+
+#[repr(u32)]
+pub enum LedMode {
+}
+
+#[repr(u32)]
+pub enum AutoRepeatMode {
+}
+
+#[repr(u32)]
+pub enum Blanking {
+}
+
+#[repr(u32)]
+pub enum Exposures {
+}
+
+#[repr(u32)]
+pub enum HostMode {
+}
+
+#[repr(u32)]
+pub enum Family {
+}
+
+#[repr(u32)]
+pub enum AccessControl {
+}
+
+#[repr(u32)]
+pub enum CloseDown {
+}
+
+#[repr(u32)]
+pub enum Kill {
+}
+
+#[repr(u32)]
+pub enum ScreenSaver {
+}
+
+#[repr(u32)]
+pub enum MappingStatus {
+}
+
+#[repr(u32)]
+pub enum MapIndex {
+}
+
+
 #[derive(Debug)]
 #[repr(C)]
 pub struct xcb_char2b_t {
