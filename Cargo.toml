@@ -6,7 +6,6 @@ edition = "2018"
 build = "build/build.rs"
 
 [dependencies]
-x11 = { version = "*", features = ["xlib_xcb"] }
 
 [build-dependencies]
 heck = "*"

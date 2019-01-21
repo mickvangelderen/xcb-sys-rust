@@ -2,7 +2,8 @@
 
 #![allow(non_camel_case_types)]
 
-use x11::xlib;
+use std::fmt;
+use std::mem;
 
 pub type xcb_bool32_t = u32;
 pub type xcb_visualid_t = u32;
@@ -11,13 +12,13 @@ pub type xcb_keysym_t = u32;
 pub type xcb_keycode_t = u8;
 pub type xcb_keycode32_t = u32;
 pub type xcb_button_t = u8;
-pub type xcb_window_t = xlib::Window;
-pub type xcb_pixmap_t = xlib::Pixmap;
-pub type xcb_cursor_t = xlib::Cursor;
-pub type xcb_font_t = xlib::Font;
-pub type xcb_gcontext_t = xlib::GContext;
-pub type xcb_colormap_t = xlib::Colormap;
-pub type xcb_atom_t = xlib::Atom;
+pub type xcb_window_t = u32;
+pub type xcb_pixmap_t = u32;
+pub type xcb_cursor_t = u32;
+pub type xcb_font_t = u32;
+pub type xcb_gcontext_t = u32;
+pub type xcb_colormap_t = u32;
+pub type xcb_atom_t = u32;
 
 #[repr(C)]
 pub union xcb_drawable_t {

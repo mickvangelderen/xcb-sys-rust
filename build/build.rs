@@ -113,7 +113,8 @@ fn main() {
 
 #![allow(non_camel_case_types)]
 
-use x11::xlib;
+use std::fmt;
+use std::mem;
 
 "##,
     )
@@ -164,7 +165,7 @@ fn write_xidtype<W: io::Write>(
 ) -> io::Result<()> {
     writeln!(
         out,
-        "pub type {xcb_name} = xlib::{xlib_name};",
+        "pub type {xcb_name} = {xlib_name};",
         xcb_name = extra.get_xcb_type_name(&xidtype.name),
         xlib_name = extra.get_xlib_name(&xidtype.name)
     )?;
