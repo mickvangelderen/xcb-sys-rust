@@ -214,7 +214,7 @@ pub struct {name} {{"##,
                 if let Some(ref bytes) = pad.bytes {
                     writeln!(
                         out,
-                        "    pad{index}: [u8; {bytes}],",
+                        "    pub _pad{index}: [u8; {bytes}],",
                         index = pad_index,
                         bytes = bytes
                     )?;
