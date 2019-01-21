@@ -2,6 +2,7 @@
 
 #![allow(non_camel_case_types)]
 
+use bitflags::bitflags;
 use x11::xlib;
 
 pub type xcb_bool32_t = u32;
@@ -33,283 +34,667 @@ pub union xcb_fontable_t {
 
 
 #[repr(u32)]
-pub enum VisualClass {
+pub enum xcb_visual_class_t {
+    StaticGray = 0,
+    GrayScale = 1,
+    StaticColor = 2,
+    PseudoColor = 3,
+    TrueColor = 4,
+    DirectColor = 5,
+}
+
+bitflags! {
+    pub struct xcb_event_mask_t: u32 {
+        const KeyPress = 1 << 0;
+        const KeyRelease = 1 << 1;
+        const ButtonPress = 1 << 2;
+        const ButtonRelease = 1 << 3;
+        const EnterWindow = 1 << 4;
+        const LeaveWindow = 1 << 5;
+        const PointerMotion = 1 << 6;
+        const PointerMotionHint = 1 << 7;
+        const Button1Motion = 1 << 8;
+        const Button2Motion = 1 << 9;
+        const Button3Motion = 1 << 10;
+        const Button4Motion = 1 << 11;
+        const Button5Motion = 1 << 12;
+        const ButtonMotion = 1 << 13;
+        const KeymapState = 1 << 14;
+        const Exposure = 1 << 15;
+        const VisibilityChange = 1 << 16;
+        const StructureNotify = 1 << 17;
+        const ResizeRedirect = 1 << 18;
+        const SubstructureNotify = 1 << 19;
+        const SubstructureRedirect = 1 << 20;
+        const FocusChange = 1 << 21;
+        const PropertyChange = 1 << 22;
+        const ColorMapChange = 1 << 23;
+        const OwnerGrabButton = 1 << 24;
+    }
+}
+
+#[repr(u32)]
+pub enum xcb_backing_store_t {
+    NotUseful = 0,
+    WhenMapped = 1,
+    Always = 2,
 }
 
 #[repr(u32)]
-pub enum EventMask {
+pub enum xcb_image_order_t {
+    LSBFirst = 0,
+    MSBFirst = 1,
 }
 
-#[repr(u32)]
-pub enum BackingStore {
-}
-
-#[repr(u32)]
-pub enum ImageOrder {
-}
-
-#[repr(u32)]
-pub enum ModMask {
-}
-
-#[repr(u32)]
-pub enum KeyButMask {
-}
-
-#[repr(u32)]
-pub enum Window {
-}
-
-#[repr(u32)]
-pub enum ButtonMask {
-}
-
-#[repr(u32)]
-pub enum Motion {
-}
-
-#[repr(u32)]
-pub enum NotifyDetail {
-}
-
-#[repr(u32)]
-pub enum NotifyMode {
+bitflags! {
+    pub struct xcb_mod_mask_t: u32 {
+        const Shift = 1 << 0;
+        const Lock = 1 << 1;
+        const Control = 1 << 2;
+        const N1 = 1 << 3;
+        const N2 = 1 << 4;
+        const N3 = 1 << 5;
+        const N4 = 1 << 6;
+        const N5 = 1 << 7;
+        const Any = 1 << 15;
+    }
 }
-
-#[repr(u32)]
-pub enum Visibility {
-}
-
-#[repr(u32)]
-pub enum Place {
-}
-
-#[repr(u32)]
-pub enum Property {
-}
-
-#[repr(u32)]
-pub enum Time {
-}
-
-#[repr(u32)]
-pub enum Atom {
-}
-
-#[repr(u32)]
-pub enum ColormapState {
-}
-
-#[repr(u32)]
-pub enum Colormap {
+
+bitflags! {
+    pub struct xcb_key_but_mask_t: u32 {
+        const Shift = 1 << 0;
+        const Lock = 1 << 1;
+        const Control = 1 << 2;
+        const Mod1 = 1 << 3;
+        const Mod2 = 1 << 4;
+        const Mod3 = 1 << 5;
+        const Mod4 = 1 << 6;
+        const Mod5 = 1 << 7;
+        const Button1 = 1 << 8;
+        const Button2 = 1 << 9;
+        const Button3 = 1 << 10;
+        const Button4 = 1 << 11;
+        const Button5 = 1 << 12;
+    }
+}
+
+#[repr(u32)]
+pub enum xcb_window_enum_t {
+    None = 0,
+}
+
+bitflags! {
+    pub struct xcb_button_mask_t: u32 {
+        const N1 = 1 << 8;
+        const N2 = 1 << 9;
+        const N3 = 1 << 10;
+        const N4 = 1 << 11;
+        const N5 = 1 << 12;
+        const Any = 1 << 15;
+    }
+}
+
+#[repr(u32)]
+pub enum xcb_motion_t {
+    Normal = 0,
+    Hint = 1,
+}
+
+#[repr(u32)]
+pub enum xcb_notify_detail_t {
+    Ancestor = 0,
+    Virtual = 1,
+    Inferior = 2,
+    Nonlinear = 3,
+    NonlinearVirtual = 4,
+    Pointer = 5,
+    PointerRoot = 6,
+    None = 7,
+}
+
+#[repr(u32)]
+pub enum xcb_notify_mode_t {
+    Normal = 0,
+    Grab = 1,
+    Ungrab = 2,
+    WhileGrabbed = 3,
+}
+
+#[repr(u32)]
+pub enum xcb_visibility_t {
+    Unobscured = 0,
+    PartiallyObscured = 1,
+    FullyObscured = 2,
+}
+
+#[repr(u32)]
+pub enum xcb_place_t {
+    OnTop = 0,
+    OnBottom = 1,
+}
+
+#[repr(u32)]
+pub enum xcb_property_t {
+    NewValue = 0,
+    Delete = 1,
+}
+
+#[repr(u32)]
+pub enum xcb_time_t {
+    CurrentTime = 0,
+}
+
+#[repr(u32)]
+pub enum xcb_atom_enum_t {
+    None = 0,
+    Any = 0,
+    PRIMARY = 1,
+    SECONDARY = 2,
+    ARC = 3,
+    ATOM = 4,
+    BITMAP = 5,
+    CARDINAL = 6,
+    COLORMAP = 7,
+    CURSOR = 8,
+    CUT_BUFFER0 = 9,
+    CUT_BUFFER1 = 10,
+    CUT_BUFFER2 = 11,
+    CUT_BUFFER3 = 12,
+    CUT_BUFFER4 = 13,
+    CUT_BUFFER5 = 14,
+    CUT_BUFFER6 = 15,
+    CUT_BUFFER7 = 16,
+    DRAWABLE = 17,
+    FONT = 18,
+    INTEGER = 19,
+    PIXMAP = 20,
+    POINT = 21,
+    RECTANGLE = 22,
+    RESOURCE_MANAGER = 23,
+    RGB_COLOR_MAP = 24,
+    RGB_BEST_MAP = 25,
+    RGB_BLUE_MAP = 26,
+    RGB_DEFAULT_MAP = 27,
+    RGB_GRAY_MAP = 28,
+    RGB_GREEN_MAP = 29,
+    RGB_RED_MAP = 30,
+    STRING = 31,
+    VISUALID = 32,
+    WINDOW = 33,
+    WM_COMMAND = 34,
+    WM_HINTS = 35,
+    WM_CLIENT_MACHINE = 36,
+    WM_ICON_NAME = 37,
+    WM_ICON_SIZE = 38,
+    WM_NAME = 39,
+    WM_NORMAL_HINTS = 40,
+    WM_SIZE_HINTS = 41,
+    WM_ZOOM_HINTS = 42,
+    MIN_SPACE = 43,
+    NORM_SPACE = 44,
+    MAX_SPACE = 45,
+    END_SPACE = 46,
+    SUPERSCRIPT_X = 47,
+    SUPERSCRIPT_Y = 48,
+    SUBSCRIPT_X = 49,
+    SUBSCRIPT_Y = 50,
+    UNDERLINE_POSITION = 51,
+    UNDERLINE_THICKNESS = 52,
+    STRIKEOUT_ASCENT = 53,
+    STRIKEOUT_DESCENT = 54,
+    ITALIC_ANGLE = 55,
+    X_HEIGHT = 56,
+    QUAD_WIDTH = 57,
+    WEIGHT = 58,
+    POINT_SIZE = 59,
+    RESOLUTION = 60,
+    COPYRIGHT = 61,
+    NOTICE = 62,
+    FONT_NAME = 63,
+    FAMILY_NAME = 64,
+    FULL_NAME = 65,
+    CAP_HEIGHT = 66,
+    WM_CLASS = 67,
+    WM_TRANSIENT_FOR = 68,
+}
+
+#[repr(u32)]
+pub enum xcb_colormap_state_t {
+    Uninstalled = 0,
+    Installed = 1,
+}
+
+#[repr(u32)]
+pub enum xcb_colormap_enum_t {
+    None = 0,
 }
 
 #[repr(u32)]
-pub enum Mapping {
+pub enum xcb_mapping_t {
+    Modifier = 0,
+    Keyboard = 1,
+    Pointer = 2,
 }
 
 #[repr(u32)]
-pub enum WindowClass {
+pub enum xcb_window_class_t {
+    CopyFromParent = 0,
+    InputOutput = 1,
+    InputOnly = 2,
 }
 
-#[repr(u32)]
-pub enum CW {
+bitflags! {
+    pub struct xcb_cw_t: u32 {
+        const BackPixmap = 1 << 0;
+        const BackPixel = 1 << 1;
+        const BorderPixmap = 1 << 2;
+        const BorderPixel = 1 << 3;
+        const BitGravity = 1 << 4;
+        const WinGravity = 1 << 5;
+        const BackingStore = 1 << 6;
+        const BackingPlanes = 1 << 7;
+        const BackingPixel = 1 << 8;
+        const OverrideRedirect = 1 << 9;
+        const SaveUnder = 1 << 10;
+        const EventMask = 1 << 11;
+        const DontPropagate = 1 << 12;
+        const Colormap = 1 << 13;
+        const Cursor = 1 << 14;
+    }
 }
 
 #[repr(u32)]
-pub enum BackPixmap {
+pub enum xcb_back_pixmap_t {
+    None = 0,
+    ParentRelative = 1,
 }
 
 #[repr(u32)]
-pub enum Gravity {
+pub enum xcb_gravity_t {
+    BitForget = 0,
+    WinUnmap = 0,
+    NorthWest = 1,
+    North = 2,
+    NorthEast = 3,
+    West = 4,
+    Center = 5,
+    East = 6,
+    SouthWest = 7,
+    South = 8,
+    SouthEast = 9,
+    Static = 10,
 }
 
 #[repr(u32)]
-pub enum MapState {
+pub enum xcb_map_state_t {
+    Unmapped = 0,
+    Unviewable = 1,
+    Viewable = 2,
 }
 
 #[repr(u32)]
-pub enum SetMode {
+pub enum xcb_set_mode_t {
+    Insert = 0,
+    Delete = 1,
 }
 
-#[repr(u32)]
-pub enum ConfigWindow {
+bitflags! {
+    pub struct xcb_config_window_t: u32 {
+        const X = 1 << 0;
+        const Y = 1 << 1;
+        const Width = 1 << 2;
+        const Height = 1 << 3;
+        const BorderWidth = 1 << 4;
+        const Sibling = 1 << 5;
+        const StackMode = 1 << 6;
+    }
 }
 
 #[repr(u32)]
-pub enum StackMode {
+pub enum xcb_stack_mode_t {
+    Above = 0,
+    Below = 1,
+    TopIf = 2,
+    BottomIf = 3,
+    Opposite = 4,
 }
 
 #[repr(u32)]
-pub enum Circulate {
+pub enum xcb_circulate_t {
+    RaiseLowest = 0,
+    LowerHighest = 1,
 }
 
 #[repr(u32)]
-pub enum PropMode {
+pub enum xcb_prop_mode_t {
+    Replace = 0,
+    Prepend = 1,
+    Append = 2,
 }
 
 #[repr(u32)]
-pub enum GetPropertyType {
+pub enum xcb_get_property_type_t {
+    Any = 0,
 }
 
 #[repr(u32)]
-pub enum SendEventDest {
+pub enum xcb_send_event_dest_t {
+    PointerWindow = 0,
+    ItemFocus = 1,
 }
 
 #[repr(u32)]
-pub enum GrabMode {
+pub enum xcb_grab_mode_t {
+    Sync = 0,
+    Async = 1,
 }
 
 #[repr(u32)]
-pub enum GrabStatus {
+pub enum xcb_grab_status_t {
+    Success = 0,
+    AlreadyGrabbed = 1,
+    InvalidTime = 2,
+    NotViewable = 3,
+    Frozen = 4,
 }
 
 #[repr(u32)]
-pub enum Cursor {
+pub enum xcb_cursor_enum_t {
+    None = 0,
 }
 
 #[repr(u32)]
-pub enum ButtonIndex {
+pub enum xcb_button_index_t {
+    Any = 0,
+    N1 = 1,
+    N2 = 2,
+    N3 = 3,
+    N4 = 4,
+    N5 = 5,
 }
 
 #[repr(u32)]
-pub enum Grab {
+pub enum xcb_grab_t {
+    Any = 0,
 }
 
 #[repr(u32)]
-pub enum Allow {
+pub enum xcb_allow_t {
+    AsyncPointer = 0,
+    SyncPointer = 1,
+    ReplayPointer = 2,
+    AsyncKeyboard = 3,
+    SyncKeyboard = 4,
+    ReplayKeyboard = 5,
+    AsyncBoth = 6,
+    SyncBoth = 7,
 }
 
 #[repr(u32)]
-pub enum InputFocus {
+pub enum xcb_input_focus_t {
+    None = 0,
+    PointerRoot = 1,
+    Parent = 2,
+    FollowKeyboard = 3,
 }
 
 #[repr(u32)]
-pub enum FontDraw {
+pub enum xcb_font_draw_t {
+    LeftToRight = 0,
+    RightToLeft = 1,
 }
 
-#[repr(u32)]
-pub enum GC {
+bitflags! {
+    pub struct xcb_gc_t: u32 {
+        const Function = 1 << 0;
+        const PlaneMask = 1 << 1;
+        const Foreground = 1 << 2;
+        const Background = 1 << 3;
+        const LineWidth = 1 << 4;
+        const LineStyle = 1 << 5;
+        const CapStyle = 1 << 6;
+        const JoinStyle = 1 << 7;
+        const FillStyle = 1 << 8;
+        const FillRule = 1 << 9;
+        const Tile = 1 << 10;
+        const Stipple = 1 << 11;
+        const TileStippleOriginX = 1 << 12;
+        const TileStippleOriginY = 1 << 13;
+        const Font = 1 << 14;
+        const SubwindowMode = 1 << 15;
+        const GraphicsExposures = 1 << 16;
+        const ClipOriginX = 1 << 17;
+        const ClipOriginY = 1 << 18;
+        const ClipMask = 1 << 19;
+        const DashOffset = 1 << 20;
+        const DashList = 1 << 21;
+        const ArcMode = 1 << 22;
+    }
 }
 
 #[repr(u32)]
-pub enum GX {
+pub enum xcb_gx_t {
+    clear = 0,
+    and = 1,
+    andReverse = 2,
+    copy = 3,
+    andInverted = 4,
+    noop = 5,
+    xor = 6,
+    or = 7,
+    nor = 8,
+    equiv = 9,
+    invert = 10,
+    orReverse = 11,
+    copyInverted = 12,
+    orInverted = 13,
+    nand = 14,
+    set = 15,
 }
 
 #[repr(u32)]
-pub enum LineStyle {
+pub enum xcb_line_style_t {
+    Solid = 0,
+    OnOffDash = 1,
+    DoubleDash = 2,
 }
 
 #[repr(u32)]
-pub enum CapStyle {
+pub enum xcb_cap_style_t {
+    NotLast = 0,
+    Butt = 1,
+    Round = 2,
+    Projecting = 3,
 }
 
 #[repr(u32)]
-pub enum JoinStyle {
+pub enum xcb_join_style_t {
+    Miter = 0,
+    Round = 1,
+    Bevel = 2,
 }
 
 #[repr(u32)]
-pub enum FillStyle {
+pub enum xcb_fill_style_t {
+    Solid = 0,
+    Tiled = 1,
+    Stippled = 2,
+    OpaqueStippled = 3,
 }
 
 #[repr(u32)]
-pub enum FillRule {
+pub enum xcb_fill_rule_t {
+    EvenOdd = 0,
+    Winding = 1,
 }
 
 #[repr(u32)]
-pub enum SubwindowMode {
+pub enum xcb_subwindow_mode_t {
+    ClipByChildren = 0,
+    IncludeInferiors = 1,
 }
 
 #[repr(u32)]
-pub enum ArcMode {
+pub enum xcb_arc_mode_t {
+    Chord = 0,
+    PieSlice = 1,
 }
 
 #[repr(u32)]
-pub enum ClipOrdering {
+pub enum xcb_clip_ordering_t {
+    Unsorted = 0,
+    YSorted = 1,
+    YXSorted = 2,
+    YXBanded = 3,
 }
 
 #[repr(u32)]
-pub enum CoordMode {
+pub enum xcb_coord_mode_t {
+    Origin = 0,
+    Previous = 1,
 }
 
 #[repr(u32)]
-pub enum PolyShape {
+pub enum xcb_poly_shape_t {
+    Complex = 0,
+    Nonconvex = 1,
+    Convex = 2,
 }
 
 #[repr(u32)]
-pub enum ImageFormat {
+pub enum xcb_image_format_t {
+    XYBitmap = 0,
+    XYPixmap = 1,
+    ZPixmap = 2,
 }
 
 #[repr(u32)]
-pub enum ColormapAlloc {
+pub enum xcb_colormap_alloc_t {
+    None = 0,
+    All = 1,
 }
 
-#[repr(u32)]
-pub enum ColorFlag {
+bitflags! {
+    pub struct xcb_color_flag_t: u32 {
+        const Red = 1 << 0;
+        const Green = 1 << 1;
+        const Blue = 1 << 2;
+    }
 }
 
 #[repr(u32)]
-pub enum Pixmap {
+pub enum xcb_pixmap_enum_t {
+    None = 0,
 }
 
 #[repr(u32)]
-pub enum Font {
+pub enum xcb_font_enum_t {
+    None = 0,
 }
 
 #[repr(u32)]
-pub enum QueryShapeOf {
+pub enum xcb_query_shape_of_t {
+    LargestCursor = 0,
+    FastestTile = 1,
+    FastestStipple = 2,
 }
 
-#[repr(u32)]
-pub enum KB {
+bitflags! {
+    pub struct xcb_kb_t: u32 {
+        const KeyClickPercent = 1 << 0;
+        const BellPercent = 1 << 1;
+        const BellPitch = 1 << 2;
+        const BellDuration = 1 << 3;
+        const Led = 1 << 4;
+        const LedMode = 1 << 5;
+        const Key = 1 << 6;
+        const AutoRepeatMode = 1 << 7;
+    }
 }
 
 #[repr(u32)]
-pub enum LedMode {
+pub enum xcb_led_mode_t {
+    Off = 0,
+    On = 1,
 }
 
 #[repr(u32)]
-pub enum AutoRepeatMode {
+pub enum xcb_auto_repeat_mode_t {
+    Off = 0,
+    On = 1,
+    Default = 2,
 }
 
 #[repr(u32)]
-pub enum Blanking {
+pub enum xcb_blanking_t {
+    NotPreferred = 0,
+    Preferred = 1,
+    Default = 2,
 }
 
 #[repr(u32)]
-pub enum Exposures {
+pub enum xcb_exposures_t {
+    NotAllowed = 0,
+    Allowed = 1,
+    Default = 2,
 }
 
 #[repr(u32)]
-pub enum HostMode {
+pub enum xcb_host_mode_t {
+    Insert = 0,
+    Delete = 1,
 }
 
 #[repr(u32)]
-pub enum Family {
+pub enum xcb_family_t {
+    Internet = 0,
+    DECnet = 1,
+    Chaos = 2,
+    ServerInterpreted = 5,
+    Internet6 = 6,
 }
 
 #[repr(u32)]
-pub enum AccessControl {
+pub enum xcb_access_control_t {
+    Disable = 0,
+    Enable = 1,
 }
 
 #[repr(u32)]
-pub enum CloseDown {
+pub enum xcb_close_down_t {
+    DestroyAll = 0,
+    RetainPermanent = 1,
+    RetainTemporary = 2,
 }
 
 #[repr(u32)]
-pub enum Kill {
+pub enum xcb_kill_t {
+    AllTemporary = 0,
 }
 
 #[repr(u32)]
-pub enum ScreenSaver {
+pub enum xcb_screen_saver_t {
+    Reset = 0,
+    Active = 1,
 }
 
 #[repr(u32)]
-pub enum MappingStatus {
+pub enum xcb_mapping_status_t {
+    Success = 0,
+    Busy = 1,
+    Failure = 2,
 }
 
 #[repr(u32)]
-pub enum MapIndex {
+pub enum xcb_map_index_t {
+    Shift = 0,
+    Lock = 1,
+    Control = 2,
+    N1 = 3,
+    N2 = 4,
+    N3 = 5,
+    N4 = 6,
+    N5 = 7,
 }
 
 

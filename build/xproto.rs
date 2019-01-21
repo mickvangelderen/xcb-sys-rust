@@ -145,7 +145,7 @@ pub enum VariantItem {
     #[serde(rename = "value")]
     Value(String),
     #[serde(rename = "bit")]
-    Bit(String),
+    Bit(u32),
 }
 
 #[derive(Debug, Deserialize)]

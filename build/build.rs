@@ -8,10 +8,12 @@ mod xproto;
 
 struct Extra {
     xcb_name_map: HashMap<String, String>,
+    xcb_enum_map: HashMap<String, String>,
     xlib_name_map: HashMap<String, String>,
 }
 
 const XCB_NAME_MAP_PATH: &'static str = "xcb-name-map.txt";
+const XCB_ENUM_MAP_PATH: &'static str = "xcb-enum-map.txt";
 const XLIB_NAME_MAP_PATH: &'static str = "xlib-name-map.txt";
 const XPROTO_XML_PATH: &'static str = "proto/src/xproto.xml";
 
@@ -19,6 +21,7 @@ impl Extra {
     pub fn new() -> io::Result<Self> {
         return Ok(Extra {
             xcb_name_map: load_map(XCB_NAME_MAP_PATH)?,
+            xcb_enum_map: load_map(XCB_ENUM_MAP_PATH)?,
             xlib_name_map: load_map(XLIB_NAME_MAP_PATH)?,
         });
 
@@ -51,6 +54,16 @@ impl Extra {
         }
     }
 
+    pub fn get_xcb_enum_name<'a>(&'a self, name: &'a str) -> &'a str {
+        match self.xcb_enum_map.get(name) {
+            Some(ref name) => name,
+            None => {
+                println!("cargo:warning=Could not find xcb name for enum {}.", name);
+                name
+            }
+        }
+    }
+
     pub fn get_xlib_name<'a>(&'a self, name: &'a str) -> &'a str {
         match self.xlib_name_map.get(name) {
             Some(ref name) => name,
@@ -64,15 +77,15 @@ impl Extra {
 
 fn main() {
     println!(r#"cargo:rerun-if-changed="{}""#, XCB_NAME_MAP_PATH);
+    println!(r#"cargo:rerun-if-changed="{}""#, XCB_ENUM_MAP_PATH);
     println!(r#"cargo:rerun-if-changed="{}""#, XLIB_NAME_MAP_PATH);
     println!(r#"cargo:rerun-if-changed="{}""#, XPROTO_XML_PATH);
 
     let extra = Extra::new().unwrap();
 
-    let root: xproto::Root = serde_xml_rs::from_reader(io::BufReader::new(
-        fs::File::open(XPROTO_XML_PATH).unwrap(),
-    ))
-    .unwrap();
+    let root: xproto::Root =
+        serde_xml_rs::from_reader(io::BufReader::new(fs::File::open(XPROTO_XML_PATH).unwrap()))
+            .unwrap();
 
     let mut out = io::BufWriter::new(fs::File::create("src/lib.rs").unwrap());
 
@@ -81,6 +94,7 @@ fn main() {
 
 #![allow(non_camel_case_types)]
 
+use bitflags::bitflags;
 use x11::xlib;
 
 "##,
@@ -168,19 +182,76 @@ pub union {name} {{"##,
     Ok(())
 }
 
-fn write_enum<W: io::Write>(
-    out: &mut W,
-    extra: &Extra,
-    enum_: &xproto::Enum,
-) -> io::Result<()> {
-    writeln!(
-        out,
-        r##"#[repr(u32)]
+fn prepend_n_if_number(s: &str) -> String {
+    match s.parse::<u32>() {
+        Ok(n) => format!("N{}", n),
+        Err(_) => s.to_string(),
+    }
+}
+
+fn write_enum<W: io::Write>(out: &mut W, extra: &Extra, enum_: &xproto::Enum) -> io::Result<()> {
+    let enum_name = extra.get_xcb_enum_name(&enum_.name);
+    if enum_.variants.iter().any(|variant| match variant.item {
+        xproto::VariantItem::Bit(_) => true,
+        _ => false,
+    }) {
+        // Bit flag enum.
+        writeln!(
+            out,
+            r##"bitflags! {{
+    pub struct {name}: u32 {{"##, name = enum_name)?;
+        for variant in enum_.variants.iter() {
+            let variant_name = prepend_n_if_number(&variant.name);
+            match variant.item {
+                xproto::VariantItem::Bit(shift) => {
+                    writeln!(
+                        out,
+                        "        const {name} = 1 << {shift};",
+                        name = variant_name,
+                        shift = shift,
+                    )?;
+                },
+                _ => {
+                    println!("cargo:warning=Ignoring variant {vari_name} in bitflag enum {enum_name}", vari_name = variant.name, enum_name = enum_name);
+                }
+            }
+        }
+        writeln!(
+            out,
+            r##"    }}
+}}
+"##)?;
+    } else {
+        // Normal enum.
+        writeln!(
+            out,
+            r##"#[repr(u32)]
 pub enum {name} {{"##,
-        name = extra.get_xcb_name(&enum_.name),
-    )?;
-    writeln!(out, r"}}
-")?;
+            name = enum_name
+        )?;
+        for variant in enum_.variants.iter() {
+            let variant_name = prepend_n_if_number(&variant.name);
+            match variant.item {
+                xproto::VariantItem::Value(ref value) => {
+                    writeln!(
+                        out,
+                        "    {name} = {value},",
+                        name = variant_name,
+                        value = value,
+                    )?;
+                },
+                _ => {
+                    // Shouldn't happen because we've handle the Bit case.
+                    panic!("Unexpected VariantItem variant.");
+                }
+            }
+        }
+        writeln!(
+            out,
+            r"}}
+"
+        )?;
+    }
     Ok(())
 }
 
