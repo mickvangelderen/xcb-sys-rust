@@ -7,9 +7,9 @@ build = "build/build.rs"
 
 [dependencies]
 x11 = { version = "*", features = ["xlib_xcb"] }
-bitflags = "1.0.4"
 
 [build-dependencies]
+heck = "*"
 serde = "*"
 serde_derive = "*"
 serde-xml-rs = "*"

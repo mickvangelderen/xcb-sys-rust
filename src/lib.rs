@@ -2,7 +2,6 @@
 
 #![allow(non_camel_case_types)]
 
-use bitflags::bitflags;
 use x11::xlib;
 
 pub type xcb_bool32_t = u32;
@@ -32,671 +31,521 @@ pub union xcb_fontable_t {
     pub gcontext: xcb_gcontext_t,
 }
 
-
-#[repr(u32)]
-pub enum xcb_visual_class_t {
-    StaticGray = 0,
-    GrayScale = 1,
-    StaticColor = 2,
-    PseudoColor = 3,
-    TrueColor = 4,
-    DirectColor = 5,
-}
-
-bitflags! {
-    pub struct xcb_event_mask_t: u32 {
-        const KeyPress = 1 << 0;
-        const KeyRelease = 1 << 1;
-        const ButtonPress = 1 << 2;
-        const ButtonRelease = 1 << 3;
-        const EnterWindow = 1 << 4;
-        const LeaveWindow = 1 << 5;
-        const PointerMotion = 1 << 6;
-        const PointerMotionHint = 1 << 7;
-        const Button1Motion = 1 << 8;
-        const Button2Motion = 1 << 9;
-        const Button3Motion = 1 << 10;
-        const Button4Motion = 1 << 11;
-        const Button5Motion = 1 << 12;
-        const ButtonMotion = 1 << 13;
-        const KeymapState = 1 << 14;
-        const Exposure = 1 << 15;
-        const VisibilityChange = 1 << 16;
-        const StructureNotify = 1 << 17;
-        const ResizeRedirect = 1 << 18;
-        const SubstructureNotify = 1 << 19;
-        const SubstructureRedirect = 1 << 20;
-        const FocusChange = 1 << 21;
-        const PropertyChange = 1 << 22;
-        const ColorMapChange = 1 << 23;
-        const OwnerGrabButton = 1 << 24;
-    }
-}
-
-#[repr(u32)]
-pub enum xcb_backing_store_t {
-    NotUseful = 0,
-    WhenMapped = 1,
-    Always = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_image_order_t {
-    LSBFirst = 0,
-    MSBFirst = 1,
-}
-
-bitflags! {
-    pub struct xcb_mod_mask_t: u32 {
-        const Shift = 1 << 0;
-        const Lock = 1 << 1;
-        const Control = 1 << 2;
-        const N1 = 1 << 3;
-        const N2 = 1 << 4;
-        const N3 = 1 << 5;
-        const N4 = 1 << 6;
-        const N5 = 1 << 7;
-        const Any = 1 << 15;
-    }
-}
-
-bitflags! {
-    pub struct xcb_key_but_mask_t: u32 {
-        const Shift = 1 << 0;
-        const Lock = 1 << 1;
-        const Control = 1 << 2;
-        const Mod1 = 1 << 3;
-        const Mod2 = 1 << 4;
-        const Mod3 = 1 << 5;
-        const Mod4 = 1 << 6;
-        const Mod5 = 1 << 7;
-        const Button1 = 1 << 8;
-        const Button2 = 1 << 9;
-        const Button3 = 1 << 10;
-        const Button4 = 1 << 11;
-        const Button5 = 1 << 12;
-    }
-}
-
-#[repr(u32)]
-pub enum xcb_window_enum_t {
-    None = 0,
-}
-
-bitflags! {
-    pub struct xcb_button_mask_t: u32 {
-        const N1 = 1 << 8;
-        const N2 = 1 << 9;
-        const N3 = 1 << 10;
-        const N4 = 1 << 11;
-        const N5 = 1 << 12;
-        const Any = 1 << 15;
-    }
-}
-
-#[repr(u32)]
-pub enum xcb_motion_t {
-    Normal = 0,
-    Hint = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_notify_detail_t {
-    Ancestor = 0,
-    Virtual = 1,
-    Inferior = 2,
-    Nonlinear = 3,
-    NonlinearVirtual = 4,
-    Pointer = 5,
-    PointerRoot = 6,
-    None = 7,
-}
-
-#[repr(u32)]
-pub enum xcb_notify_mode_t {
-    Normal = 0,
-    Grab = 1,
-    Ungrab = 2,
-    WhileGrabbed = 3,
-}
-
-#[repr(u32)]
-pub enum xcb_visibility_t {
-    Unobscured = 0,
-    PartiallyObscured = 1,
-    FullyObscured = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_place_t {
-    OnTop = 0,
-    OnBottom = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_property_t {
-    NewValue = 0,
-    Delete = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_time_t {
-    CurrentTime = 0,
-}
-
-#[repr(u32)]
-pub enum xcb_atom_enum_t {
-    None = 0,
-    Any = 0,
-    PRIMARY = 1,
-    SECONDARY = 2,
-    ARC = 3,
-    ATOM = 4,
-    BITMAP = 5,
-    CARDINAL = 6,
-    COLORMAP = 7,
-    CURSOR = 8,
-    CUT_BUFFER0 = 9,
-    CUT_BUFFER1 = 10,
-    CUT_BUFFER2 = 11,
-    CUT_BUFFER3 = 12,
-    CUT_BUFFER4 = 13,
-    CUT_BUFFER5 = 14,
-    CUT_BUFFER6 = 15,
-    CUT_BUFFER7 = 16,
-    DRAWABLE = 17,
-    FONT = 18,
-    INTEGER = 19,
-    PIXMAP = 20,
-    POINT = 21,
-    RECTANGLE = 22,
-    RESOURCE_MANAGER = 23,
-    RGB_COLOR_MAP = 24,
-    RGB_BEST_MAP = 25,
-    RGB_BLUE_MAP = 26,
-    RGB_DEFAULT_MAP = 27,
-    RGB_GRAY_MAP = 28,
-    RGB_GREEN_MAP = 29,
-    RGB_RED_MAP = 30,
-    STRING = 31,
-    VISUALID = 32,
-    WINDOW = 33,
-    WM_COMMAND = 34,
-    WM_HINTS = 35,
-    WM_CLIENT_MACHINE = 36,
-    WM_ICON_NAME = 37,
-    WM_ICON_SIZE = 38,
-    WM_NAME = 39,
-    WM_NORMAL_HINTS = 40,
-    WM_SIZE_HINTS = 41,
-    WM_ZOOM_HINTS = 42,
-    MIN_SPACE = 43,
-    NORM_SPACE = 44,
-    MAX_SPACE = 45,
-    END_SPACE = 46,
-    SUPERSCRIPT_X = 47,
-    SUPERSCRIPT_Y = 48,
-    SUBSCRIPT_X = 49,
-    SUBSCRIPT_Y = 50,
-    UNDERLINE_POSITION = 51,
-    UNDERLINE_THICKNESS = 52,
-    STRIKEOUT_ASCENT = 53,
-    STRIKEOUT_DESCENT = 54,
-    ITALIC_ANGLE = 55,
-    X_HEIGHT = 56,
-    QUAD_WIDTH = 57,
-    WEIGHT = 58,
-    POINT_SIZE = 59,
-    RESOLUTION = 60,
-    COPYRIGHT = 61,
-    NOTICE = 62,
-    FONT_NAME = 63,
-    FAMILY_NAME = 64,
-    FULL_NAME = 65,
-    CAP_HEIGHT = 66,
-    WM_CLASS = 67,
-    WM_TRANSIENT_FOR = 68,
-}
-
-#[repr(u32)]
-pub enum xcb_colormap_state_t {
-    Uninstalled = 0,
-    Installed = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_colormap_enum_t {
-    None = 0,
-}
-
-#[repr(u32)]
-pub enum xcb_mapping_t {
-    Modifier = 0,
-    Keyboard = 1,
-    Pointer = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_window_class_t {
-    CopyFromParent = 0,
-    InputOutput = 1,
-    InputOnly = 2,
-}
-
-bitflags! {
-    pub struct xcb_cw_t: u32 {
-        const BackPixmap = 1 << 0;
-        const BackPixel = 1 << 1;
-        const BorderPixmap = 1 << 2;
-        const BorderPixel = 1 << 3;
-        const BitGravity = 1 << 4;
-        const WinGravity = 1 << 5;
-        const BackingStore = 1 << 6;
-        const BackingPlanes = 1 << 7;
-        const BackingPixel = 1 << 8;
-        const OverrideRedirect = 1 << 9;
-        const SaveUnder = 1 << 10;
-        const EventMask = 1 << 11;
-        const DontPropagate = 1 << 12;
-        const Colormap = 1 << 13;
-        const Cursor = 1 << 14;
-    }
-}
-
-#[repr(u32)]
-pub enum xcb_back_pixmap_t {
-    None = 0,
-    ParentRelative = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_gravity_t {
-    BitForget = 0,
-    WinUnmap = 0,
-    NorthWest = 1,
-    North = 2,
-    NorthEast = 3,
-    West = 4,
-    Center = 5,
-    East = 6,
-    SouthWest = 7,
-    South = 8,
-    SouthEast = 9,
-    Static = 10,
-}
-
-#[repr(u32)]
-pub enum xcb_map_state_t {
-    Unmapped = 0,
-    Unviewable = 1,
-    Viewable = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_set_mode_t {
-    Insert = 0,
-    Delete = 1,
-}
-
-bitflags! {
-    pub struct xcb_config_window_t: u32 {
-        const X = 1 << 0;
-        const Y = 1 << 1;
-        const Width = 1 << 2;
-        const Height = 1 << 3;
-        const BorderWidth = 1 << 4;
-        const Sibling = 1 << 5;
-        const StackMode = 1 << 6;
-    }
-}
-
-#[repr(u32)]
-pub enum xcb_stack_mode_t {
-    Above = 0,
-    Below = 1,
-    TopIf = 2,
-    BottomIf = 3,
-    Opposite = 4,
-}
-
-#[repr(u32)]
-pub enum xcb_circulate_t {
-    RaiseLowest = 0,
-    LowerHighest = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_prop_mode_t {
-    Replace = 0,
-    Prepend = 1,
-    Append = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_get_property_type_t {
-    Any = 0,
-}
-
-#[repr(u32)]
-pub enum xcb_send_event_dest_t {
-    PointerWindow = 0,
-    ItemFocus = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_grab_mode_t {
-    Sync = 0,
-    Async = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_grab_status_t {
-    Success = 0,
-    AlreadyGrabbed = 1,
-    InvalidTime = 2,
-    NotViewable = 3,
-    Frozen = 4,
-}
-
-#[repr(u32)]
-pub enum xcb_cursor_enum_t {
-    None = 0,
-}
-
-#[repr(u32)]
-pub enum xcb_button_index_t {
-    Any = 0,
-    N1 = 1,
-    N2 = 2,
-    N3 = 3,
-    N4 = 4,
-    N5 = 5,
-}
-
-#[repr(u32)]
-pub enum xcb_grab_t {
-    Any = 0,
-}
-
-#[repr(u32)]
-pub enum xcb_allow_t {
-    AsyncPointer = 0,
-    SyncPointer = 1,
-    ReplayPointer = 2,
-    AsyncKeyboard = 3,
-    SyncKeyboard = 4,
-    ReplayKeyboard = 5,
-    AsyncBoth = 6,
-    SyncBoth = 7,
-}
-
-#[repr(u32)]
-pub enum xcb_input_focus_t {
-    None = 0,
-    PointerRoot = 1,
-    Parent = 2,
-    FollowKeyboard = 3,
-}
-
-#[repr(u32)]
-pub enum xcb_font_draw_t {
-    LeftToRight = 0,
-    RightToLeft = 1,
-}
-
-bitflags! {
-    pub struct xcb_gc_t: u32 {
-        const Function = 1 << 0;
-        const PlaneMask = 1 << 1;
-        const Foreground = 1 << 2;
-        const Background = 1 << 3;
-        const LineWidth = 1 << 4;
-        const LineStyle = 1 << 5;
-        const CapStyle = 1 << 6;
-        const JoinStyle = 1 << 7;
-        const FillStyle = 1 << 8;
-        const FillRule = 1 << 9;
-        const Tile = 1 << 10;
-        const Stipple = 1 << 11;
-        const TileStippleOriginX = 1 << 12;
-        const TileStippleOriginY = 1 << 13;
-        const Font = 1 << 14;
-        const SubwindowMode = 1 << 15;
-        const GraphicsExposures = 1 << 16;
-        const ClipOriginX = 1 << 17;
-        const ClipOriginY = 1 << 18;
-        const ClipMask = 1 << 19;
-        const DashOffset = 1 << 20;
-        const DashList = 1 << 21;
-        const ArcMode = 1 << 22;
-    }
-}
-
-#[repr(u32)]
-pub enum xcb_gx_t {
-    clear = 0,
-    and = 1,
-    andReverse = 2,
-    copy = 3,
-    andInverted = 4,
-    noop = 5,
-    xor = 6,
-    or = 7,
-    nor = 8,
-    equiv = 9,
-    invert = 10,
-    orReverse = 11,
-    copyInverted = 12,
-    orInverted = 13,
-    nand = 14,
-    set = 15,
-}
-
-#[repr(u32)]
-pub enum xcb_line_style_t {
-    Solid = 0,
-    OnOffDash = 1,
-    DoubleDash = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_cap_style_t {
-    NotLast = 0,
-    Butt = 1,
-    Round = 2,
-    Projecting = 3,
-}
-
-#[repr(u32)]
-pub enum xcb_join_style_t {
-    Miter = 0,
-    Round = 1,
-    Bevel = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_fill_style_t {
-    Solid = 0,
-    Tiled = 1,
-    Stippled = 2,
-    OpaqueStippled = 3,
-}
-
-#[repr(u32)]
-pub enum xcb_fill_rule_t {
-    EvenOdd = 0,
-    Winding = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_subwindow_mode_t {
-    ClipByChildren = 0,
-    IncludeInferiors = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_arc_mode_t {
-    Chord = 0,
-    PieSlice = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_clip_ordering_t {
-    Unsorted = 0,
-    YSorted = 1,
-    YXSorted = 2,
-    YXBanded = 3,
-}
-
-#[repr(u32)]
-pub enum xcb_coord_mode_t {
-    Origin = 0,
-    Previous = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_poly_shape_t {
-    Complex = 0,
-    Nonconvex = 1,
-    Convex = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_image_format_t {
-    XYBitmap = 0,
-    XYPixmap = 1,
-    ZPixmap = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_colormap_alloc_t {
-    None = 0,
-    All = 1,
-}
-
-bitflags! {
-    pub struct xcb_color_flag_t: u32 {
-        const Red = 1 << 0;
-        const Green = 1 << 1;
-        const Blue = 1 << 2;
-    }
-}
-
-#[repr(u32)]
-pub enum xcb_pixmap_enum_t {
-    None = 0,
-}
-
-#[repr(u32)]
-pub enum xcb_font_enum_t {
-    None = 0,
-}
-
-#[repr(u32)]
-pub enum xcb_query_shape_of_t {
-    LargestCursor = 0,
-    FastestTile = 1,
-    FastestStipple = 2,
-}
-
-bitflags! {
-    pub struct xcb_kb_t: u32 {
-        const KeyClickPercent = 1 << 0;
-        const BellPercent = 1 << 1;
-        const BellPitch = 1 << 2;
-        const BellDuration = 1 << 3;
-        const Led = 1 << 4;
-        const LedMode = 1 << 5;
-        const Key = 1 << 6;
-        const AutoRepeatMode = 1 << 7;
-    }
-}
-
-#[repr(u32)]
-pub enum xcb_led_mode_t {
-    Off = 0,
-    On = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_auto_repeat_mode_t {
-    Off = 0,
-    On = 1,
-    Default = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_blanking_t {
-    NotPreferred = 0,
-    Preferred = 1,
-    Default = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_exposures_t {
-    NotAllowed = 0,
-    Allowed = 1,
-    Default = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_host_mode_t {
-    Insert = 0,
-    Delete = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_family_t {
-    Internet = 0,
-    DECnet = 1,
-    Chaos = 2,
-    ServerInterpreted = 5,
-    Internet6 = 6,
-}
-
-#[repr(u32)]
-pub enum xcb_access_control_t {
-    Disable = 0,
-    Enable = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_close_down_t {
-    DestroyAll = 0,
-    RetainPermanent = 1,
-    RetainTemporary = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_kill_t {
-    AllTemporary = 0,
-}
-
-#[repr(u32)]
-pub enum xcb_screen_saver_t {
-    Reset = 0,
-    Active = 1,
-}
-
-#[repr(u32)]
-pub enum xcb_mapping_status_t {
-    Success = 0,
-    Busy = 1,
-    Failure = 2,
-}
-
-#[repr(u32)]
-pub enum xcb_map_index_t {
-    Shift = 0,
-    Lock = 1,
-    Control = 2,
-    N1 = 3,
-    N2 = 4,
-    N3 = 5,
-    N4 = 6,
-    N5 = 7,
-}
-
+pub type xcb_visual_class_t = u32;
+pub const XCB_VISUAL_CLASS_STATIC_GRAY: xcb_visual_class_t = 0;
+pub const XCB_VISUAL_CLASS_GRAY_SCALE: xcb_visual_class_t = 1;
+pub const XCB_VISUAL_CLASS_STATIC_COLOR: xcb_visual_class_t = 2;
+pub const XCB_VISUAL_CLASS_PSEUDO_COLOR: xcb_visual_class_t = 3;
+pub const XCB_VISUAL_CLASS_TRUE_COLOR: xcb_visual_class_t = 4;
+pub const XCB_VISUAL_CLASS_DIRECT_COLOR: xcb_visual_class_t = 5;
+
+pub type xcb_event_mask_t = u32;
+pub const XCB_EVENT_MASK_NO_EVENT: xcb_event_mask_t = 0;
+pub const XCB_EVENT_MASK_KEY_PRESS: xcb_event_mask_t = 1 << 0;
+pub const XCB_EVENT_MASK_KEY_RELEASE: xcb_event_mask_t = 1 << 1;
+pub const XCB_EVENT_MASK_BUTTON_PRESS: xcb_event_mask_t = 1 << 2;
+pub const XCB_EVENT_MASK_BUTTON_RELEASE: xcb_event_mask_t = 1 << 3;
+pub const XCB_EVENT_MASK_ENTER_WINDOW: xcb_event_mask_t = 1 << 4;
+pub const XCB_EVENT_MASK_LEAVE_WINDOW: xcb_event_mask_t = 1 << 5;
+pub const XCB_EVENT_MASK_POINTER_MOTION: xcb_event_mask_t = 1 << 6;
+pub const XCB_EVENT_MASK_POINTER_MOTION_HINT: xcb_event_mask_t = 1 << 7;
+pub const XCB_EVENT_MASK_BUTTON1_MOTION: xcb_event_mask_t = 1 << 8;
+pub const XCB_EVENT_MASK_BUTTON2_MOTION: xcb_event_mask_t = 1 << 9;
+pub const XCB_EVENT_MASK_BUTTON3_MOTION: xcb_event_mask_t = 1 << 10;
+pub const XCB_EVENT_MASK_BUTTON4_MOTION: xcb_event_mask_t = 1 << 11;
+pub const XCB_EVENT_MASK_BUTTON5_MOTION: xcb_event_mask_t = 1 << 12;
+pub const XCB_EVENT_MASK_BUTTON_MOTION: xcb_event_mask_t = 1 << 13;
+pub const XCB_EVENT_MASK_KEYMAP_STATE: xcb_event_mask_t = 1 << 14;
+pub const XCB_EVENT_MASK_EXPOSURE: xcb_event_mask_t = 1 << 15;
+pub const XCB_EVENT_MASK_VISIBILITY_CHANGE: xcb_event_mask_t = 1 << 16;
+pub const XCB_EVENT_MASK_STRUCTURE_NOTIFY: xcb_event_mask_t = 1 << 17;
+pub const XCB_EVENT_MASK_RESIZE_REDIRECT: xcb_event_mask_t = 1 << 18;
+pub const XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY: xcb_event_mask_t = 1 << 19;
+pub const XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT: xcb_event_mask_t = 1 << 20;
+pub const XCB_EVENT_MASK_FOCUS_CHANGE: xcb_event_mask_t = 1 << 21;
+pub const XCB_EVENT_MASK_PROPERTY_CHANGE: xcb_event_mask_t = 1 << 22;
+pub const XCB_EVENT_MASK_COLOR_MAP_CHANGE: xcb_event_mask_t = 1 << 23;
+pub const XCB_EVENT_MASK_OWNER_GRAB_BUTTON: xcb_event_mask_t = 1 << 24;
+
+pub type xcb_backing_store_t = u32;
+pub const XCB_BACKING_STORE_NOT_USEFUL: xcb_backing_store_t = 0;
+pub const XCB_BACKING_STORE_WHEN_MAPPED: xcb_backing_store_t = 1;
+pub const XCB_BACKING_STORE_ALWAYS: xcb_backing_store_t = 2;
+
+pub type xcb_image_order_t = u32;
+pub const XCB_IMAGE_ORDER_LSB_FIRST: xcb_image_order_t = 0;
+pub const XCB_IMAGE_ORDER_MSB_FIRST: xcb_image_order_t = 1;
+
+pub type xcb_mod_mask_t = u32;
+pub const XCB_MOD_MASK_SHIFT: xcb_mod_mask_t = 1 << 0;
+pub const XCB_MOD_MASK_LOCK: xcb_mod_mask_t = 1 << 1;
+pub const XCB_MOD_MASK_CONTROL: xcb_mod_mask_t = 1 << 2;
+pub const XCB_MOD_MASK_1: xcb_mod_mask_t = 1 << 3;
+pub const XCB_MOD_MASK_2: xcb_mod_mask_t = 1 << 4;
+pub const XCB_MOD_MASK_3: xcb_mod_mask_t = 1 << 5;
+pub const XCB_MOD_MASK_4: xcb_mod_mask_t = 1 << 6;
+pub const XCB_MOD_MASK_5: xcb_mod_mask_t = 1 << 7;
+pub const XCB_MOD_MASK_ANY: xcb_mod_mask_t = 1 << 15;
+
+pub type xcb_key_but_mask_t = u32;
+pub const XCB_KEY_BUT_MASK_SHIFT: xcb_key_but_mask_t = 1 << 0;
+pub const XCB_KEY_BUT_MASK_LOCK: xcb_key_but_mask_t = 1 << 1;
+pub const XCB_KEY_BUT_MASK_CONTROL: xcb_key_but_mask_t = 1 << 2;
+pub const XCB_KEY_BUT_MASK_MOD1: xcb_key_but_mask_t = 1 << 3;
+pub const XCB_KEY_BUT_MASK_MOD2: xcb_key_but_mask_t = 1 << 4;
+pub const XCB_KEY_BUT_MASK_MOD3: xcb_key_but_mask_t = 1 << 5;
+pub const XCB_KEY_BUT_MASK_MOD4: xcb_key_but_mask_t = 1 << 6;
+pub const XCB_KEY_BUT_MASK_MOD5: xcb_key_but_mask_t = 1 << 7;
+pub const XCB_KEY_BUT_MASK_BUTTON1: xcb_key_but_mask_t = 1 << 8;
+pub const XCB_KEY_BUT_MASK_BUTTON2: xcb_key_but_mask_t = 1 << 9;
+pub const XCB_KEY_BUT_MASK_BUTTON3: xcb_key_but_mask_t = 1 << 10;
+pub const XCB_KEY_BUT_MASK_BUTTON4: xcb_key_but_mask_t = 1 << 11;
+pub const XCB_KEY_BUT_MASK_BUTTON5: xcb_key_but_mask_t = 1 << 12;
+
+pub type xcb_window_enum_t = u32;
+pub const XCB_WINDOW_NONE: xcb_window_enum_t = 0;
+
+pub type xcb_button_mask_t = u32;
+pub const XCB_BUTTON_MASK_1: xcb_button_mask_t = 1 << 8;
+pub const XCB_BUTTON_MASK_2: xcb_button_mask_t = 1 << 9;
+pub const XCB_BUTTON_MASK_3: xcb_button_mask_t = 1 << 10;
+pub const XCB_BUTTON_MASK_4: xcb_button_mask_t = 1 << 11;
+pub const XCB_BUTTON_MASK_5: xcb_button_mask_t = 1 << 12;
+pub const XCB_BUTTON_MASK_ANY: xcb_button_mask_t = 1 << 15;
+
+pub type xcb_motion_t = u32;
+pub const XCB_MOTION_NORMAL: xcb_motion_t = 0;
+pub const XCB_MOTION_HINT: xcb_motion_t = 1;
+
+pub type xcb_notify_detail_t = u32;
+pub const XCB_NOTIFY_DETAIL_ANCESTOR: xcb_notify_detail_t = 0;
+pub const XCB_NOTIFY_DETAIL_VIRTUAL: xcb_notify_detail_t = 1;
+pub const XCB_NOTIFY_DETAIL_INFERIOR: xcb_notify_detail_t = 2;
+pub const XCB_NOTIFY_DETAIL_NONLINEAR: xcb_notify_detail_t = 3;
+pub const XCB_NOTIFY_DETAIL_NONLINEAR_VIRTUAL: xcb_notify_detail_t = 4;
+pub const XCB_NOTIFY_DETAIL_POINTER: xcb_notify_detail_t = 5;
+pub const XCB_NOTIFY_DETAIL_POINTER_ROOT: xcb_notify_detail_t = 6;
+pub const XCB_NOTIFY_DETAIL_NONE: xcb_notify_detail_t = 7;
+
+pub type xcb_notify_mode_t = u32;
+pub const XCB_NOTIFY_MODE_NORMAL: xcb_notify_mode_t = 0;
+pub const XCB_NOTIFY_MODE_GRAB: xcb_notify_mode_t = 1;
+pub const XCB_NOTIFY_MODE_UNGRAB: xcb_notify_mode_t = 2;
+pub const XCB_NOTIFY_MODE_WHILE_GRABBED: xcb_notify_mode_t = 3;
+
+pub type xcb_visibility_t = u32;
+pub const XCB_VISIBILITY_UNOBSCURED: xcb_visibility_t = 0;
+pub const XCB_VISIBILITY_PARTIALLY_OBSCURED: xcb_visibility_t = 1;
+pub const XCB_VISIBILITY_FULLY_OBSCURED: xcb_visibility_t = 2;
+
+pub type xcb_place_t = u32;
+pub const XCB_PLACE_ON_TOP: xcb_place_t = 0;
+pub const XCB_PLACE_ON_BOTTOM: xcb_place_t = 1;
+
+pub type xcb_property_t = u32;
+pub const XCB_PROPERTY_NEW_VALUE: xcb_property_t = 0;
+pub const XCB_PROPERTY_DELETE: xcb_property_t = 1;
+
+pub type xcb_time_t = u32;
+pub const XCB_TIME_CURRENT_TIME: xcb_time_t = 0;
+
+pub type xcb_atom_enum_t = u32;
+pub const XCB_ATOM_NONE: xcb_atom_enum_t = 0;
+pub const XCB_ATOM_ANY: xcb_atom_enum_t = 0;
+pub const XCB_ATOM_PRIMARY: xcb_atom_enum_t = 1;
+pub const XCB_ATOM_SECONDARY: xcb_atom_enum_t = 2;
+pub const XCB_ATOM_ARC: xcb_atom_enum_t = 3;
+pub const XCB_ATOM_ATOM: xcb_atom_enum_t = 4;
+pub const XCB_ATOM_BITMAP: xcb_atom_enum_t = 5;
+pub const XCB_ATOM_CARDINAL: xcb_atom_enum_t = 6;
+pub const XCB_ATOM_COLORMAP: xcb_atom_enum_t = 7;
+pub const XCB_ATOM_CURSOR: xcb_atom_enum_t = 8;
+pub const XCB_ATOM_CUT_BUFFER0: xcb_atom_enum_t = 9;
+pub const XCB_ATOM_CUT_BUFFER1: xcb_atom_enum_t = 10;
+pub const XCB_ATOM_CUT_BUFFER2: xcb_atom_enum_t = 11;
+pub const XCB_ATOM_CUT_BUFFER3: xcb_atom_enum_t = 12;
+pub const XCB_ATOM_CUT_BUFFER4: xcb_atom_enum_t = 13;
+pub const XCB_ATOM_CUT_BUFFER5: xcb_atom_enum_t = 14;
+pub const XCB_ATOM_CUT_BUFFER6: xcb_atom_enum_t = 15;
+pub const XCB_ATOM_CUT_BUFFER7: xcb_atom_enum_t = 16;
+pub const XCB_ATOM_DRAWABLE: xcb_atom_enum_t = 17;
+pub const XCB_ATOM_FONT: xcb_atom_enum_t = 18;
+pub const XCB_ATOM_INTEGER: xcb_atom_enum_t = 19;
+pub const XCB_ATOM_PIXMAP: xcb_atom_enum_t = 20;
+pub const XCB_ATOM_POINT: xcb_atom_enum_t = 21;
+pub const XCB_ATOM_RECTANGLE: xcb_atom_enum_t = 22;
+pub const XCB_ATOM_RESOURCE_MANAGER: xcb_atom_enum_t = 23;
+pub const XCB_ATOM_RGB_COLOR_MAP: xcb_atom_enum_t = 24;
+pub const XCB_ATOM_RGB_BEST_MAP: xcb_atom_enum_t = 25;
+pub const XCB_ATOM_RGB_BLUE_MAP: xcb_atom_enum_t = 26;
+pub const XCB_ATOM_RGB_DEFAULT_MAP: xcb_atom_enum_t = 27;
+pub const XCB_ATOM_RGB_GRAY_MAP: xcb_atom_enum_t = 28;
+pub const XCB_ATOM_RGB_GREEN_MAP: xcb_atom_enum_t = 29;
+pub const XCB_ATOM_RGB_RED_MAP: xcb_atom_enum_t = 30;
+pub const XCB_ATOM_STRING: xcb_atom_enum_t = 31;
+pub const XCB_ATOM_VISUALID: xcb_atom_enum_t = 32;
+pub const XCB_ATOM_WINDOW: xcb_atom_enum_t = 33;
+pub const XCB_ATOM_WM_COMMAND: xcb_atom_enum_t = 34;
+pub const XCB_ATOM_WM_HINTS: xcb_atom_enum_t = 35;
+pub const XCB_ATOM_WM_CLIENT_MACHINE: xcb_atom_enum_t = 36;
+pub const XCB_ATOM_WM_ICON_NAME: xcb_atom_enum_t = 37;
+pub const XCB_ATOM_WM_ICON_SIZE: xcb_atom_enum_t = 38;
+pub const XCB_ATOM_WM_NAME: xcb_atom_enum_t = 39;
+pub const XCB_ATOM_WM_NORMAL_HINTS: xcb_atom_enum_t = 40;
+pub const XCB_ATOM_WM_SIZE_HINTS: xcb_atom_enum_t = 41;
+pub const XCB_ATOM_WM_ZOOM_HINTS: xcb_atom_enum_t = 42;
+pub const XCB_ATOM_MIN_SPACE: xcb_atom_enum_t = 43;
+pub const XCB_ATOM_NORM_SPACE: xcb_atom_enum_t = 44;
+pub const XCB_ATOM_MAX_SPACE: xcb_atom_enum_t = 45;
+pub const XCB_ATOM_END_SPACE: xcb_atom_enum_t = 46;
+pub const XCB_ATOM_SUPERSCRIPT_X: xcb_atom_enum_t = 47;
+pub const XCB_ATOM_SUPERSCRIPT_Y: xcb_atom_enum_t = 48;
+pub const XCB_ATOM_SUBSCRIPT_X: xcb_atom_enum_t = 49;
+pub const XCB_ATOM_SUBSCRIPT_Y: xcb_atom_enum_t = 50;
+pub const XCB_ATOM_UNDERLINE_POSITION: xcb_atom_enum_t = 51;
+pub const XCB_ATOM_UNDERLINE_THICKNESS: xcb_atom_enum_t = 52;
+pub const XCB_ATOM_STRIKEOUT_ASCENT: xcb_atom_enum_t = 53;
+pub const XCB_ATOM_STRIKEOUT_DESCENT: xcb_atom_enum_t = 54;
+pub const XCB_ATOM_ITALIC_ANGLE: xcb_atom_enum_t = 55;
+pub const XCB_ATOM_X_HEIGHT: xcb_atom_enum_t = 56;
+pub const XCB_ATOM_QUAD_WIDTH: xcb_atom_enum_t = 57;
+pub const XCB_ATOM_WEIGHT: xcb_atom_enum_t = 58;
+pub const XCB_ATOM_POINT_SIZE: xcb_atom_enum_t = 59;
+pub const XCB_ATOM_RESOLUTION: xcb_atom_enum_t = 60;
+pub const XCB_ATOM_COPYRIGHT: xcb_atom_enum_t = 61;
+pub const XCB_ATOM_NOTICE: xcb_atom_enum_t = 62;
+pub const XCB_ATOM_FONT_NAME: xcb_atom_enum_t = 63;
+pub const XCB_ATOM_FAMILY_NAME: xcb_atom_enum_t = 64;
+pub const XCB_ATOM_FULL_NAME: xcb_atom_enum_t = 65;
+pub const XCB_ATOM_CAP_HEIGHT: xcb_atom_enum_t = 66;
+pub const XCB_ATOM_WM_CLASS: xcb_atom_enum_t = 67;
+pub const XCB_ATOM_WM_TRANSIENT_FOR: xcb_atom_enum_t = 68;
+
+pub type xcb_colormap_state_t = u32;
+pub const XCB_COLORMAP_STATE_UNINSTALLED: xcb_colormap_state_t = 0;
+pub const XCB_COLORMAP_STATE_INSTALLED: xcb_colormap_state_t = 1;
+
+pub type xcb_colormap_enum_t = u32;
+pub const XCB_COLORMAP_NONE: xcb_colormap_enum_t = 0;
+
+pub type xcb_mapping_t = u32;
+pub const XCB_MAPPING_MODIFIER: xcb_mapping_t = 0;
+pub const XCB_MAPPING_KEYBOARD: xcb_mapping_t = 1;
+pub const XCB_MAPPING_POINTER: xcb_mapping_t = 2;
+
+pub type xcb_window_class_t = u32;
+pub const XCB_WINDOW_CLASS_COPY_FROM_PARENT: xcb_window_class_t = 0;
+pub const XCB_WINDOW_CLASS_INPUT_OUTPUT: xcb_window_class_t = 1;
+pub const XCB_WINDOW_CLASS_INPUT_ONLY: xcb_window_class_t = 2;
+
+pub type xcb_cw_t = u32;
+pub const XCB_CW_BACK_PIXMAP: xcb_cw_t = 1 << 0;
+pub const XCB_CW_BACK_PIXEL: xcb_cw_t = 1 << 1;
+pub const XCB_CW_BORDER_PIXMAP: xcb_cw_t = 1 << 2;
+pub const XCB_CW_BORDER_PIXEL: xcb_cw_t = 1 << 3;
+pub const XCB_CW_BIT_GRAVITY: xcb_cw_t = 1 << 4;
+pub const XCB_CW_WIN_GRAVITY: xcb_cw_t = 1 << 5;
+pub const XCB_CW_BACKING_STORE: xcb_cw_t = 1 << 6;
+pub const XCB_CW_BACKING_PLANES: xcb_cw_t = 1 << 7;
+pub const XCB_CW_BACKING_PIXEL: xcb_cw_t = 1 << 8;
+pub const XCB_CW_OVERRIDE_REDIRECT: xcb_cw_t = 1 << 9;
+pub const XCB_CW_SAVE_UNDER: xcb_cw_t = 1 << 10;
+pub const XCB_CW_EVENT_MASK: xcb_cw_t = 1 << 11;
+pub const XCB_CW_DONT_PROPAGATE: xcb_cw_t = 1 << 12;
+pub const XCB_CW_COLORMAP: xcb_cw_t = 1 << 13;
+pub const XCB_CW_CURSOR: xcb_cw_t = 1 << 14;
+
+pub type xcb_back_pixmap_t = u32;
+pub const XCB_BACK_PIXMAP_NONE: xcb_back_pixmap_t = 0;
+pub const XCB_BACK_PIXMAP_PARENT_RELATIVE: xcb_back_pixmap_t = 1;
+
+pub type xcb_gravity_t = u32;
+pub const XCB_GRAVITY_BIT_FORGET: xcb_gravity_t = 0;
+pub const XCB_GRAVITY_WIN_UNMAP: xcb_gravity_t = 0;
+pub const XCB_GRAVITY_NORTH_WEST: xcb_gravity_t = 1;
+pub const XCB_GRAVITY_NORTH: xcb_gravity_t = 2;
+pub const XCB_GRAVITY_NORTH_EAST: xcb_gravity_t = 3;
+pub const XCB_GRAVITY_WEST: xcb_gravity_t = 4;
+pub const XCB_GRAVITY_CENTER: xcb_gravity_t = 5;
+pub const XCB_GRAVITY_EAST: xcb_gravity_t = 6;
+pub const XCB_GRAVITY_SOUTH_WEST: xcb_gravity_t = 7;
+pub const XCB_GRAVITY_SOUTH: xcb_gravity_t = 8;
+pub const XCB_GRAVITY_SOUTH_EAST: xcb_gravity_t = 9;
+pub const XCB_GRAVITY_STATIC: xcb_gravity_t = 10;
+
+pub type xcb_map_state_t = u32;
+pub const XCB_MAP_STATE_UNMAPPED: xcb_map_state_t = 0;
+pub const XCB_MAP_STATE_UNVIEWABLE: xcb_map_state_t = 1;
+pub const XCB_MAP_STATE_VIEWABLE: xcb_map_state_t = 2;
+
+pub type xcb_set_mode_t = u32;
+pub const XCB_SET_MODE_INSERT: xcb_set_mode_t = 0;
+pub const XCB_SET_MODE_DELETE: xcb_set_mode_t = 1;
+
+pub type xcb_config_window_t = u32;
+pub const XCB_CONFIG_WINDOW_X: xcb_config_window_t = 1 << 0;
+pub const XCB_CONFIG_WINDOW_Y: xcb_config_window_t = 1 << 1;
+pub const XCB_CONFIG_WINDOW_WIDTH: xcb_config_window_t = 1 << 2;
+pub const XCB_CONFIG_WINDOW_HEIGHT: xcb_config_window_t = 1 << 3;
+pub const XCB_CONFIG_WINDOW_BORDER_WIDTH: xcb_config_window_t = 1 << 4;
+pub const XCB_CONFIG_WINDOW_SIBLING: xcb_config_window_t = 1 << 5;
+pub const XCB_CONFIG_WINDOW_STACK_MODE: xcb_config_window_t = 1 << 6;
+
+pub type xcb_stack_mode_t = u32;
+pub const XCB_STACK_MODE_ABOVE: xcb_stack_mode_t = 0;
+pub const XCB_STACK_MODE_BELOW: xcb_stack_mode_t = 1;
+pub const XCB_STACK_MODE_TOP_IF: xcb_stack_mode_t = 2;
+pub const XCB_STACK_MODE_BOTTOM_IF: xcb_stack_mode_t = 3;
+pub const XCB_STACK_MODE_OPPOSITE: xcb_stack_mode_t = 4;
+
+pub type xcb_circulate_t = u32;
+pub const XCB_CIRCULATE_RAISE_LOWEST: xcb_circulate_t = 0;
+pub const XCB_CIRCULATE_LOWER_HIGHEST: xcb_circulate_t = 1;
+
+pub type xcb_prop_mode_t = u32;
+pub const XCB_PROP_MODE_REPLACE: xcb_prop_mode_t = 0;
+pub const XCB_PROP_MODE_PREPEND: xcb_prop_mode_t = 1;
+pub const XCB_PROP_MODE_APPEND: xcb_prop_mode_t = 2;
+
+pub type xcb_get_property_type_t = u32;
+pub const XCB_GET_PROPERTY_TYPE_ANY: xcb_get_property_type_t = 0;
+
+pub type xcb_send_event_dest_t = u32;
+pub const XCB_SEND_EVENT_DEST_POINTER_WINDOW: xcb_send_event_dest_t = 0;
+pub const XCB_SEND_EVENT_DEST_ITEM_FOCUS: xcb_send_event_dest_t = 1;
+
+pub type xcb_grab_mode_t = u32;
+pub const XCB_GRAB_MODE_SYNC: xcb_grab_mode_t = 0;
+pub const XCB_GRAB_MODE_ASYNC: xcb_grab_mode_t = 1;
+
+pub type xcb_grab_status_t = u32;
+pub const XCB_GRAB_STATUS_SUCCESS: xcb_grab_status_t = 0;
+pub const XCB_GRAB_STATUS_ALREADY_GRABBED: xcb_grab_status_t = 1;
+pub const XCB_GRAB_STATUS_INVALID_TIME: xcb_grab_status_t = 2;
+pub const XCB_GRAB_STATUS_NOT_VIEWABLE: xcb_grab_status_t = 3;
+pub const XCB_GRAB_STATUS_FROZEN: xcb_grab_status_t = 4;
+
+pub type xcb_cursor_enum_t = u32;
+pub const XCB_CURSOR_NONE: xcb_cursor_enum_t = 0;
+
+pub type xcb_button_index_t = u32;
+pub const XCB_BUTTON_INDEX_ANY: xcb_button_index_t = 0;
+pub const XCB_BUTTON_INDEX_1: xcb_button_index_t = 1;
+pub const XCB_BUTTON_INDEX_2: xcb_button_index_t = 2;
+pub const XCB_BUTTON_INDEX_3: xcb_button_index_t = 3;
+pub const XCB_BUTTON_INDEX_4: xcb_button_index_t = 4;
+pub const XCB_BUTTON_INDEX_5: xcb_button_index_t = 5;
+
+pub type xcb_grab_t = u32;
+pub const XCB_GRAB_ANY: xcb_grab_t = 0;
+
+pub type xcb_allow_t = u32;
+pub const XCB_ALLOW_ASYNC_POINTER: xcb_allow_t = 0;
+pub const XCB_ALLOW_SYNC_POINTER: xcb_allow_t = 1;
+pub const XCB_ALLOW_REPLAY_POINTER: xcb_allow_t = 2;
+pub const XCB_ALLOW_ASYNC_KEYBOARD: xcb_allow_t = 3;
+pub const XCB_ALLOW_SYNC_KEYBOARD: xcb_allow_t = 4;
+pub const XCB_ALLOW_REPLAY_KEYBOARD: xcb_allow_t = 5;
+pub const XCB_ALLOW_ASYNC_BOTH: xcb_allow_t = 6;
+pub const XCB_ALLOW_SYNC_BOTH: xcb_allow_t = 7;
+
+pub type xcb_input_focus_t = u32;
+pub const XCB_INPUT_FOCUS_NONE: xcb_input_focus_t = 0;
+pub const XCB_INPUT_FOCUS_POINTER_ROOT: xcb_input_focus_t = 1;
+pub const XCB_INPUT_FOCUS_PARENT: xcb_input_focus_t = 2;
+pub const XCB_INPUT_FOCUS_FOLLOW_KEYBOARD: xcb_input_focus_t = 3;
+
+pub type xcb_font_draw_t = u32;
+pub const XCB_FONT_DRAW_LEFT_TO_RIGHT: xcb_font_draw_t = 0;
+pub const XCB_FONT_DRAW_RIGHT_TO_LEFT: xcb_font_draw_t = 1;
+
+pub type xcb_gc_t = u32;
+pub const XCB_GC_FUNCTION: xcb_gc_t = 1 << 0;
+pub const XCB_GC_PLANE_MASK: xcb_gc_t = 1 << 1;
+pub const XCB_GC_FOREGROUND: xcb_gc_t = 1 << 2;
+pub const XCB_GC_BACKGROUND: xcb_gc_t = 1 << 3;
+pub const XCB_GC_LINE_WIDTH: xcb_gc_t = 1 << 4;
+pub const XCB_GC_LINE_STYLE: xcb_gc_t = 1 << 5;
+pub const XCB_GC_CAP_STYLE: xcb_gc_t = 1 << 6;
+pub const XCB_GC_JOIN_STYLE: xcb_gc_t = 1 << 7;
+pub const XCB_GC_FILL_STYLE: xcb_gc_t = 1 << 8;
+pub const XCB_GC_FILL_RULE: xcb_gc_t = 1 << 9;
+pub const XCB_GC_TILE: xcb_gc_t = 1 << 10;
+pub const XCB_GC_STIPPLE: xcb_gc_t = 1 << 11;
+pub const XCB_GC_TILE_STIPPLE_ORIGIN_X: xcb_gc_t = 1 << 12;
+pub const XCB_GC_TILE_STIPPLE_ORIGIN_Y: xcb_gc_t = 1 << 13;
+pub const XCB_GC_FONT: xcb_gc_t = 1 << 14;
+pub const XCB_GC_SUBWINDOW_MODE: xcb_gc_t = 1 << 15;
+pub const XCB_GC_GRAPHICS_EXPOSURES: xcb_gc_t = 1 << 16;
+pub const XCB_GC_CLIP_ORIGIN_X: xcb_gc_t = 1 << 17;
+pub const XCB_GC_CLIP_ORIGIN_Y: xcb_gc_t = 1 << 18;
+pub const XCB_GC_CLIP_MASK: xcb_gc_t = 1 << 19;
+pub const XCB_GC_DASH_OFFSET: xcb_gc_t = 1 << 20;
+pub const XCB_GC_DASH_LIST: xcb_gc_t = 1 << 21;
+pub const XCB_GC_ARC_MODE: xcb_gc_t = 1 << 22;
+
+pub type xcb_gx_t = u32;
+pub const XCB_GX_CLEAR: xcb_gx_t = 0;
+pub const XCB_GX_AND: xcb_gx_t = 1;
+pub const XCB_GX_AND_REVERSE: xcb_gx_t = 2;
+pub const XCB_GX_COPY: xcb_gx_t = 3;
+pub const XCB_GX_AND_INVERTED: xcb_gx_t = 4;
+pub const XCB_GX_NOOP: xcb_gx_t = 5;
+pub const XCB_GX_XOR: xcb_gx_t = 6;
+pub const XCB_GX_OR: xcb_gx_t = 7;
+pub const XCB_GX_NOR: xcb_gx_t = 8;
+pub const XCB_GX_EQUIV: xcb_gx_t = 9;
+pub const XCB_GX_INVERT: xcb_gx_t = 10;
+pub const XCB_GX_OR_REVERSE: xcb_gx_t = 11;
+pub const XCB_GX_COPY_INVERTED: xcb_gx_t = 12;
+pub const XCB_GX_OR_INVERTED: xcb_gx_t = 13;
+pub const XCB_GX_NAND: xcb_gx_t = 14;
+pub const XCB_GX_SET: xcb_gx_t = 15;
+
+pub type xcb_line_style_t = u32;
+pub const XCB_LINE_STYLE_SOLID: xcb_line_style_t = 0;
+pub const XCB_LINE_STYLE_ON_OFF_DASH: xcb_line_style_t = 1;
+pub const XCB_LINE_STYLE_DOUBLE_DASH: xcb_line_style_t = 2;
+
+pub type xcb_cap_style_t = u32;
+pub const XCB_CAP_STYLE_NOT_LAST: xcb_cap_style_t = 0;
+pub const XCB_CAP_STYLE_BUTT: xcb_cap_style_t = 1;
+pub const XCB_CAP_STYLE_ROUND: xcb_cap_style_t = 2;
+pub const XCB_CAP_STYLE_PROJECTING: xcb_cap_style_t = 3;
+
+pub type xcb_join_style_t = u32;
+pub const XCB_JOIN_STYLE_MITER: xcb_join_style_t = 0;
+pub const XCB_JOIN_STYLE_ROUND: xcb_join_style_t = 1;
+pub const XCB_JOIN_STYLE_BEVEL: xcb_join_style_t = 2;
+
+pub type xcb_fill_style_t = u32;
+pub const XCB_FILL_STYLE_SOLID: xcb_fill_style_t = 0;
+pub const XCB_FILL_STYLE_TILED: xcb_fill_style_t = 1;
+pub const XCB_FILL_STYLE_STIPPLED: xcb_fill_style_t = 2;
+pub const XCB_FILL_STYLE_OPAQUE_STIPPLED: xcb_fill_style_t = 3;
+
+pub type xcb_fill_rule_t = u32;
+pub const XCB_FILL_RULE_EVEN_ODD: xcb_fill_rule_t = 0;
+pub const XCB_FILL_RULE_WINDING: xcb_fill_rule_t = 1;
+
+pub type xcb_subwindow_mode_t = u32;
+pub const XCB_SUBWINDOW_MODE_CLIP_BY_CHILDREN: xcb_subwindow_mode_t = 0;
+pub const XCB_SUBWINDOW_MODE_INCLUDE_INFERIORS: xcb_subwindow_mode_t = 1;
+
+pub type xcb_arc_mode_t = u32;
+pub const XCB_ARC_MODE_CHORD: xcb_arc_mode_t = 0;
+pub const XCB_ARC_MODE_PIE_SLICE: xcb_arc_mode_t = 1;
+
+pub type xcb_clip_ordering_t = u32;
+pub const XCB_CLIP_ORDERING_UNSORTED: xcb_clip_ordering_t = 0;
+pub const XCB_CLIP_ORDERING_Y_SORTED: xcb_clip_ordering_t = 1;
+pub const XCB_CLIP_ORDERING_YX_SORTED: xcb_clip_ordering_t = 2;
+pub const XCB_CLIP_ORDERING_YX_BANDED: xcb_clip_ordering_t = 3;
+
+pub type xcb_coord_mode_t = u32;
+pub const XCB_COORD_MODE_ORIGIN: xcb_coord_mode_t = 0;
+pub const XCB_COORD_MODE_PREVIOUS: xcb_coord_mode_t = 1;
+
+pub type xcb_poly_shape_t = u32;
+pub const XCB_POLY_SHAPE_COMPLEX: xcb_poly_shape_t = 0;
+pub const XCB_POLY_SHAPE_NONCONVEX: xcb_poly_shape_t = 1;
+pub const XCB_POLY_SHAPE_CONVEX: xcb_poly_shape_t = 2;
+
+pub type xcb_image_format_t = u32;
+pub const XCB_IMAGE_FORMAT_XY_BITMAP: xcb_image_format_t = 0;
+pub const XCB_IMAGE_FORMAT_XY_PIXMAP: xcb_image_format_t = 1;
+pub const XCB_IMAGE_FORMAT_Z_PIXMAP: xcb_image_format_t = 2;
+
+pub type xcb_colormap_alloc_t = u32;
+pub const XCB_COLORMAP_ALLOC_NONE: xcb_colormap_alloc_t = 0;
+pub const XCB_COLORMAP_ALLOC_ALL: xcb_colormap_alloc_t = 1;
+
+pub type xcb_color_flag_t = u32;
+pub const XCB_COLOR_FLAG_RED: xcb_color_flag_t = 1 << 0;
+pub const XCB_COLOR_FLAG_GREEN: xcb_color_flag_t = 1 << 1;
+pub const XCB_COLOR_FLAG_BLUE: xcb_color_flag_t = 1 << 2;
+
+pub type xcb_pixmap_enum_t = u32;
+pub const XCB_PIXMAP_NONE: xcb_pixmap_enum_t = 0;
+
+pub type xcb_font_enum_t = u32;
+pub const XCB_FONT_NONE: xcb_font_enum_t = 0;
+
+pub type xcb_query_shape_of_t = u32;
+pub const XCB_QUERY_SHAPE_OF_LARGEST_CURSOR: xcb_query_shape_of_t = 0;
+pub const XCB_QUERY_SHAPE_OF_FASTEST_TILE: xcb_query_shape_of_t = 1;
+pub const XCB_QUERY_SHAPE_OF_FASTEST_STIPPLE: xcb_query_shape_of_t = 2;
+
+pub type xcb_kb_t = u32;
+pub const XCB_KB_KEY_CLICK_PERCENT: xcb_kb_t = 1 << 0;
+pub const XCB_KB_BELL_PERCENT: xcb_kb_t = 1 << 1;
+pub const XCB_KB_BELL_PITCH: xcb_kb_t = 1 << 2;
+pub const XCB_KB_BELL_DURATION: xcb_kb_t = 1 << 3;
+pub const XCB_KB_LED: xcb_kb_t = 1 << 4;
+pub const XCB_KB_LED_MODE: xcb_kb_t = 1 << 5;
+pub const XCB_KB_KEY: xcb_kb_t = 1 << 6;
+pub const XCB_KB_AUTO_REPEAT_MODE: xcb_kb_t = 1 << 7;
+
+pub type xcb_led_mode_t = u32;
+pub const XCB_LED_MODE_OFF: xcb_led_mode_t = 0;
+pub const XCB_LED_MODE_ON: xcb_led_mode_t = 1;
+
+pub type xcb_auto_repeat_mode_t = u32;
+pub const XCB_AUTO_REPEAT_MODE_OFF: xcb_auto_repeat_mode_t = 0;
+pub const XCB_AUTO_REPEAT_MODE_ON: xcb_auto_repeat_mode_t = 1;
+pub const XCB_AUTO_REPEAT_MODE_DEFAULT: xcb_auto_repeat_mode_t = 2;
+
+pub type xcb_blanking_t = u32;
+pub const XCB_BLANKING_NOT_PREFERRED: xcb_blanking_t = 0;
+pub const XCB_BLANKING_PREFERRED: xcb_blanking_t = 1;
+pub const XCB_BLANKING_DEFAULT: xcb_blanking_t = 2;
+
+pub type xcb_exposures_t = u32;
+pub const XCB_EXPOSURES_NOT_ALLOWED: xcb_exposures_t = 0;
+pub const XCB_EXPOSURES_ALLOWED: xcb_exposures_t = 1;
+pub const XCB_EXPOSURES_DEFAULT: xcb_exposures_t = 2;
+
+pub type xcb_host_mode_t = u32;
+pub const XCB_HOST_MODE_INSERT: xcb_host_mode_t = 0;
+pub const XCB_HOST_MODE_DELETE: xcb_host_mode_t = 1;
+
+pub type xcb_family_t = u32;
+pub const XCB_FAMILY_INTERNET: xcb_family_t = 0;
+pub const XCB_FAMILY_DE_CNET: xcb_family_t = 1;
+pub const XCB_FAMILY_CHAOS: xcb_family_t = 2;
+pub const XCB_FAMILY_SERVER_INTERPRETED: xcb_family_t = 5;
+pub const XCB_FAMILY_INTERNET6: xcb_family_t = 6;
+
+pub type xcb_access_control_t = u32;
+pub const XCB_ACCESS_CONTROL_DISABLE: xcb_access_control_t = 0;
+pub const XCB_ACCESS_CONTROL_ENABLE: xcb_access_control_t = 1;
+
+pub type xcb_close_down_t = u32;
+pub const XCB_CLOSE_DOWN_DESTROY_ALL: xcb_close_down_t = 0;
+pub const XCB_CLOSE_DOWN_RETAIN_PERMANENT: xcb_close_down_t = 1;
+pub const XCB_CLOSE_DOWN_RETAIN_TEMPORARY: xcb_close_down_t = 2;
+
+pub type xcb_kill_t = u32;
+pub const XCB_KILL_ALL_TEMPORARY: xcb_kill_t = 0;
+
+pub type xcb_screen_saver_t = u32;
+pub const XCB_SCREEN_SAVER_RESET: xcb_screen_saver_t = 0;
+pub const XCB_SCREEN_SAVER_ACTIVE: xcb_screen_saver_t = 1;
+
+pub type xcb_mapping_status_t = u32;
+pub const XCB_MAPPING_STATUS_SUCCESS: xcb_mapping_status_t = 0;
+pub const XCB_MAPPING_STATUS_BUSY: xcb_mapping_status_t = 1;
+pub const XCB_MAPPING_STATUS_FAILURE: xcb_mapping_status_t = 2;
+
+pub type xcb_map_index_t = u32;
+pub const XCB_MAP_INDEX_SHIFT: xcb_map_index_t = 0;
+pub const XCB_MAP_INDEX_LOCK: xcb_map_index_t = 1;
+pub const XCB_MAP_INDEX_CONTROL: xcb_map_index_t = 2;
+pub const XCB_MAP_INDEX_1: xcb_map_index_t = 3;
+pub const XCB_MAP_INDEX_2: xcb_map_index_t = 4;
+pub const XCB_MAP_INDEX_3: xcb_map_index_t = 5;
+pub const XCB_MAP_INDEX_4: xcb_map_index_t = 6;
+pub const XCB_MAP_INDEX_5: xcb_map_index_t = 7;
 
 #[derive(Debug)]
 #[repr(C)]
@@ -738,7 +587,7 @@ pub struct xcb_format_t {
     pub depth: u8,
     pub bits_per_pixel: u8,
     pub scanline_pad: u8,
-    pad0: [u8; 5],
+    pub _pad0: [u8; 5],
 }
 
 #[derive(Debug)]
@@ -751,16 +600,16 @@ pub struct xcb_visualtype_t {
     pub red_mask: u32,
     pub green_mask: u32,
     pub blue_mask: u32,
-    pad0: [u8; 4],
+    pub _pad0: [u8; 4],
 }
 
 #[derive(Debug)]
 #[repr(C)]
 pub struct xcb_depth_t {
     pub depth: u8,
-    pad0: [u8; 1],
+    pub _pad0: [u8; 1],
     pub visuals_len: u16,
-    pad1: [u8; 4],
+    pub _pad1: [u8; 4],
     // list
 }
 
@@ -790,12 +639,12 @@ pub struct xcb_screen_t {
 #[repr(C)]
 pub struct xcb_setup_request_t {
     pub byte_order: u8,
-    pad0: [u8; 1],
+    pub _pad0: [u8; 1],
     pub protocol_major_version: u16,
     pub protocol_minor_version: u16,
     pub authorization_protocol_name_len: u16,
     pub authorization_protocol_data_len: u16,
-    pad1: [u8; 2],
+    pub _pad1: [u8; 2],
     // list
     // list
 }
@@ -815,7 +664,7 @@ pub struct xcb_setup_failed_t {
 #[repr(C)]
 pub struct xcb_setup_authenticate_t {
     pub status: u8,
-    pad0: [u8; 5],
+    pub _pad0: [u8; 5],
     pub length: u16,
     // list
 }
@@ -824,7 +673,7 @@ pub struct xcb_setup_authenticate_t {
 #[repr(C)]
 pub struct xcb_setup_t {
     pub status: u8,
-    pad0: [u8; 1],
+    pub _pad0: [u8; 1],
     pub protocol_major_version: u16,
     pub protocol_minor_version: u16,
     pub length: u16,
@@ -842,7 +691,7 @@ pub struct xcb_setup_t {
     pub bitmap_format_scanline_pad: u8,
     pub min_keycode: xcb_keycode_t,
     pub max_keycode: xcb_keycode_t,
-    pad1: [u8; 4],
+    pub _pad1: [u8; 4],
     // list
     // list
     // list
@@ -898,7 +747,7 @@ pub struct xcb_coloritem_t {
     pub green: u16,
     pub blue: u16,
     pub flags: u8,
-    pad0: [u8; 1],
+    pub _pad0: [u8; 1],
 }
 
 #[derive(Debug)]
@@ -907,14 +756,14 @@ pub struct xcb_rgb_t {
     pub red: u16,
     pub green: u16,
     pub blue: u16,
-    pad0: [u8; 2],
+    pub _pad0: [u8; 2],
 }
 
 #[derive(Debug)]
 #[repr(C)]
 pub struct xcb_host_t {
     pub family: u8,
-    pad0: [u8; 1],
+    pub _pad0: [u8; 1],
     pub address_len: u16,
     // list
 }

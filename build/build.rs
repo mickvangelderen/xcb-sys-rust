@@ -1,3 +1,5 @@
+use heck::ShoutySnakeCase;
+use heck::SnakeCase;
 use std::collections::HashMap;
 use std::fs;
 use std::io;
@@ -7,12 +9,12 @@ use std::path;
 mod xproto;
 
 struct Extra {
-    xcb_name_map: HashMap<String, String>,
+    xcb_type_map: HashMap<String, String>,
     xcb_enum_map: HashMap<String, String>,
     xlib_name_map: HashMap<String, String>,
 }
 
-const XCB_NAME_MAP_PATH: &'static str = "xcb-name-map.txt";
+const XCB_TYPE_MAP_PATH: &'static str = "xcb-type-map.txt";
 const XCB_ENUM_MAP_PATH: &'static str = "xcb-enum-map.txt";
 const XLIB_NAME_MAP_PATH: &'static str = "xlib-name-map.txt";
 const XPROTO_XML_PATH: &'static str = "proto/src/xproto.xml";
@@ -20,7 +22,7 @@ const XPROTO_XML_PATH: &'static str = "proto/src/xproto.xml";
 impl Extra {
     pub fn new() -> io::Result<Self> {
         return Ok(Extra {
-            xcb_name_map: load_map(XCB_NAME_MAP_PATH)?,
+            xcb_type_map: load_map(XCB_TYPE_MAP_PATH)?,
             xcb_enum_map: load_map(XCB_ENUM_MAP_PATH)?,
             xlib_name_map: load_map(XLIB_NAME_MAP_PATH)?,
         });
@@ -31,7 +33,8 @@ impl Extra {
             let mut map: HashMap<String, String> = HashMap::new();
             for line in io::BufReader::new(fs::File::open(path).unwrap()).lines() {
                 let line = line?;
-                if line == "" {
+                let line = line.trim_end();
+                if line == "" || line.starts_with("#") {
                     continue;
                 }
                 let mut part_iter = line.split(" ");
@@ -44,23 +47,39 @@ impl Extra {
         }
     }
 
-    pub fn get_xcb_name<'a>(&'a self, name: &'a str) -> &'a str {
-        match self.xcb_name_map.get(name) {
-            Some(ref name) => name,
-            None => {
-                println!("cargo:warning=Could not find xcb name for {}.", name);
-                name
+    pub fn get_xcb_type_name(&self, name: &str) -> String {
+        let auto_name = format!("xcb_{}_t", name.to_snake_case());
+        match self.xcb_type_map.get(name) {
+            Some(found_name) => {
+                if &auto_name == found_name {
+                    println!(
+                        "cargo:warning=Unnecessary name override for {} in {}.",
+                        name, XCB_TYPE_MAP_PATH
+                    );
+                    auto_name
+                } else {
+                    found_name.to_string()
+                }
             }
+            None => auto_name,
         }
     }
 
-    pub fn get_xcb_enum_name<'a>(&'a self, name: &'a str) -> &'a str {
+    pub fn get_xcb_enum_name(&self, name: &str) -> String {
+        let auto_name = format!("xcb_{}_t", name.to_snake_case());
         match self.xcb_enum_map.get(name) {
-            Some(ref name) => name,
-            None => {
-                println!("cargo:warning=Could not find xcb name for enum {}.", name);
-                name
+            Some(found_name) => {
+                if &auto_name == found_name {
+                    println!(
+                        "cargo:warning=Unnecessary name override for {} in {}.",
+                        name, XCB_ENUM_MAP_PATH
+                    );
+                    auto_name
+                } else {
+                    found_name.to_string()
+                }
             }
+            None => auto_name,
         }
     }
 
@@ -76,7 +95,7 @@ impl Extra {
 }
 
 fn main() {
-    println!(r#"cargo:rerun-if-changed="{}""#, XCB_NAME_MAP_PATH);
+    println!(r#"cargo:rerun-if-changed="{}""#, XCB_TYPE_MAP_PATH);
     println!(r#"cargo:rerun-if-changed="{}""#, XCB_ENUM_MAP_PATH);
     println!(r#"cargo:rerun-if-changed="{}""#, XLIB_NAME_MAP_PATH);
     println!(r#"cargo:rerun-if-changed="{}""#, XPROTO_XML_PATH);
@@ -94,7 +113,6 @@ fn main() {
 
 #![allow(non_camel_case_types)]
 
-use bitflags::bitflags;
 use x11::xlib;
 
 "##,
@@ -115,13 +133,9 @@ use x11::xlib;
         write_xidunion(&mut out, &extra, &xidunion).unwrap();
     }
 
-    writeln!(out).unwrap();
-
     for enum_ in root.items.iter().filter_map(xproto::RootItem::as_enum) {
         write_enum(&mut out, &extra, &enum_).unwrap();
     }
-
-    writeln!(out).unwrap();
 
     for struct_ in root.items.iter().filter_map(xproto::RootItem::as_struct) {
         write_struct(&mut out, &extra, &struct_).unwrap();
@@ -136,9 +150,9 @@ fn write_typedef<W: io::Write>(
     writeln!(
         out,
         "pub type {alias} = {ty};",
-        alias = extra.get_xcb_name(&typedef.alias),
+        alias = extra.get_xcb_type_name(&typedef.alias),
         // NOTE(mickvangelderen): We assume the type definitions are simple.
-        ty = extra.get_xcb_name(&typedef.ty)
+        ty = extra.get_xcb_type_name(&typedef.ty)
     )?;
     Ok(())
 }
@@ -151,7 +165,7 @@ fn write_xidtype<W: io::Write>(
     writeln!(
         out,
         "pub type {xcb_name} = xlib::{xlib_name};",
-        xcb_name = extra.get_xcb_name(&xidtype.name),
+        xcb_name = extra.get_xcb_type_name(&xidtype.name),
         xlib_name = extra.get_xlib_name(&xidtype.name)
     )?;
     Ok(())
@@ -162,7 +176,7 @@ fn write_xidunion<W: io::Write>(
     extra: &Extra,
     xidunion: &xproto::XIDUnion,
 ) -> io::Result<()> {
-    let union_name = extra.get_xcb_name(&xidunion.name);
+    let union_name = extra.get_xcb_type_name(&xidunion.name);
     writeln!(
         out,
         r##"#[repr(C)]
@@ -170,7 +184,7 @@ pub union {name} {{"##,
         name = union_name
     )?;
     for ty in &xidunion.types {
-        let xcb_ty = extra.get_xcb_name(ty);
+        let xcb_ty = extra.get_xcb_type_name(ty);
         let field = &xcb_ty[4..xcb_ty.len() - 2];
         writeln!(out, "    pub {field}: {ty},", ty = xcb_ty, field = field)?;
     }
@@ -182,76 +196,40 @@ pub union {name} {{"##,
     Ok(())
 }
 
-fn prepend_n_if_number(s: &str) -> String {
-    match s.parse::<u32>() {
-        Ok(n) => format!("N{}", n),
-        Err(_) => s.to_string(),
-    }
-}
-
 fn write_enum<W: io::Write>(out: &mut W, extra: &Extra, enum_: &xproto::Enum) -> io::Result<()> {
     let enum_name = extra.get_xcb_enum_name(&enum_.name);
-    if enum_.variants.iter().any(|variant| match variant.item {
-        xproto::VariantItem::Bit(_) => true,
-        _ => false,
-    }) {
-        // Bit flag enum.
-        writeln!(
-            out,
-            r##"bitflags! {{
-    pub struct {name}: u32 {{"##, name = enum_name)?;
-        for variant in enum_.variants.iter() {
-            let variant_name = prepend_n_if_number(&variant.name);
-            match variant.item {
-                xproto::VariantItem::Bit(shift) => {
-                    writeln!(
-                        out,
-                        "        const {name} = 1 << {shift};",
-                        name = variant_name,
-                        shift = shift,
-                    )?;
-                },
-                _ => {
-                    println!("cargo:warning=Ignoring variant {vari_name} in bitflag enum {enum_name}", vari_name = variant.name, enum_name = enum_name);
-                }
+    let prefix = format!("XCB_{}", enum_.name.to_shouty_snake_case());
+
+    writeln!(out, r"pub type {} = u32;", enum_name)?;
+
+    for variant in enum_.variants.iter() {
+        let vari_name = variant.name.to_shouty_snake_case();
+        match &variant.item {
+            xproto::VariantItem::Value(value) => {
+                writeln!(
+                    out,
+                    "pub const {prefix}_{vari_name}: {enum_name} = {value};",
+                    enum_name = enum_name,
+                    prefix = prefix,
+                    vari_name = vari_name,
+                    value = value,
+                )?;
+            }
+            xproto::VariantItem::Bit(shift) => {
+                writeln!(
+                    out,
+                    "pub const {prefix}_{vari_name}: {enum_name} = 1 << {shift};",
+                    enum_name = enum_name,
+                    prefix = prefix,
+                    vari_name = vari_name,
+                    shift = shift,
+                )?;
             }
         }
-        writeln!(
-            out,
-            r##"    }}
-}}
-"##)?;
-    } else {
-        // Normal enum.
-        writeln!(
-            out,
-            r##"#[repr(u32)]
-pub enum {name} {{"##,
-            name = enum_name
-        )?;
-        for variant in enum_.variants.iter() {
-            let variant_name = prepend_n_if_number(&variant.name);
-            match variant.item {
-                xproto::VariantItem::Value(ref value) => {
-                    writeln!(
-                        out,
-                        "    {name} = {value},",
-                        name = variant_name,
-                        value = value,
-                    )?;
-                },
-                _ => {
-                    // Shouldn't happen because we've handle the Bit case.
-                    panic!("Unexpected VariantItem variant.");
-                }
-            }
-        }
-        writeln!(
-            out,
-            r"}}
-"
-        )?;
     }
+
+    writeln!(out)?;
+
     Ok(())
 }
 
@@ -260,7 +238,7 @@ fn write_struct<W: io::Write>(
     extra: &Extra,
     struct_: &xproto::Struct,
 ) -> io::Result<()> {
-    let struct_name = extra.get_xcb_name(&struct_.name);
+    let struct_name = extra.get_xcb_type_name(&struct_.name);
 
     let mut pad_index = 0;
     writeln!(
@@ -273,7 +251,7 @@ pub struct {name} {{"##,
     for item in struct_.items.iter() {
         match item {
             xproto::StructItem::Field(field) => {
-                let field_ty = extra.get_xcb_name(&field.ty);
+                let field_ty = extra.get_xcb_type_name(&field.ty);
                 writeln!(
                     out,
                     "    pub {name}: {ty},",
