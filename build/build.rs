@@ -132,8 +132,8 @@ fn main() {
         write_xid_union(&mut out, &extra, &xid_union).unwrap();
     }
 
-    for union in root.items.iter().filter_map(xproto::RootItem::as_union) {
-        write_union(&mut out, &extra, &union).unwrap();
+    for union_ in root.items.iter().filter_map(xproto::RootItem::as_union) {
+        write_union(&mut out, &extra, &union_).unwrap();
     }
 
     for enum_ in root.items.iter().filter_map(xproto::RootItem::as_enum) {
@@ -237,15 +237,15 @@ pub union {name} {{"##,
     Ok(())
 }
 
-fn write_union<W: io::Write>(out: &mut W, extra: &Extra, union: &xproto::Union) -> io::Result<()> {
-    let union_name = extra.get_xcb_type_name(&union.name);
+fn write_union<W: io::Write>(out: &mut W, extra: &Extra, union_: &xproto::Union) -> io::Result<()> {
+    let union_name = extra.get_xcb_type_name(&union_.name);
     writeln!(
         out,
         r##"#[repr(C)]
 pub union {name} {{"##,
         name = union_name
     )?;
-    for item in &union.items {
+    for item in &union_.items {
         let ty = extra.get_xcb_type_name(&item.ty);
         writeln!(
             out,
