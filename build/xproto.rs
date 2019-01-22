@@ -1,12 +1,12 @@
 use serde_derive::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Root {
     #[serde(rename = "$value")]
     pub items: Vec<RootItem>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub enum RootItem {
     #[serde(rename = "struct")]
     Struct(Struct),
@@ -34,7 +34,15 @@ pub enum RootItem {
 
 impl RootItem {
     #[inline]
-    pub fn as_xidtype(&self) -> Option<&XIDType> {
+    pub fn as_struct(&self) -> Option<&Struct> {
+        match *self {
+            RootItem::Struct(ref x) => Some(x),
+            _ => None,
+        }
+    }
+
+    #[inline]
+    pub fn as_xid_type(&self) -> Option<&XIDType> {
         match *self {
             RootItem::XIDType(ref x) => Some(x),
             _ => None,
@@ -42,9 +50,38 @@ impl RootItem {
     }
 
     #[inline]
-    pub fn as_xidunion(&self) -> Option<&XIDUnion> {
+    pub fn as_xid_union(&self) -> Option<&XIDUnion> {
         match *self {
             RootItem::XIDUnion(ref x) => Some(x),
+            _ => None,
+        }
+    }
+
+    #[inline]
+    pub fn as_typedef(&self) -> Option<&Typedef> {
+        match *self {
+            RootItem::Typedef(ref x) => Some(x),
+            _ => None,
+        }
+    }
+    #[inline]
+    pub fn as_enum(&self) -> Option<&Enum> {
+        match *self {
+            RootItem::Enum(ref x) => Some(x),
+            _ => None,
+        }
+    }
+    #[inline]
+    pub fn as_event(&self) -> Option<&Event> {
+        match *self {
+            RootItem::Event(ref x) => Some(x),
+            _ => None,
+        }
+    }
+    #[inline]
+    pub fn as_event_copy(&self) -> Option<&EventCopy> {
+        match *self {
+            RootItem::EventCopy(ref x) => Some(x),
             _ => None,
         }
     }
@@ -58,46 +95,38 @@ impl RootItem {
     }
 
     #[inline]
-    pub fn as_enum(&self) -> Option<&Enum> {
+    pub fn as_error(&self) -> Option<&Error> {
         match *self {
-            RootItem::Enum(ref x) => Some(x),
+            RootItem::Error(ref x) => Some(x),
             _ => None,
         }
     }
 
     #[inline]
-    pub fn as_typedef(&self) -> Option<&Typedef> {
+    pub fn as_error_copy(&self) -> Option<&ErrorCopy> {
         match *self {
-            RootItem::Typedef(ref x) => Some(x),
+            RootItem::ErrorCopy(ref x) => Some(x),
             _ => None,
         }
     }
 
     #[inline]
-    pub fn as_struct(&self) -> Option<&Struct> {
+    pub fn as_request(&self) -> Option<&Request> {
         match *self {
-            RootItem::Struct(ref x) => Some(x),
-            _ => None,
-        }
-    }
-
-    #[inline]
-    pub fn as_event(&self) -> Option<&Event> {
-        match *self {
-            RootItem::Event(ref x) => Some(x),
+            RootItem::Request(ref x) => Some(x),
             _ => None,
         }
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Struct {
     pub name: String,
     #[serde(rename = "$value")]
     pub items: Vec<StructItem>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub enum StructItem {
     #[serde(rename = "field")]
     Field(Field),
@@ -107,35 +136,37 @@ pub enum StructItem {
     List(List),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Field {
     pub name: String,
     #[serde(rename = "type")]
     pub ty: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Pad {
     pub bytes: Option<String>,
     pub align: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct List {}
+#[derive(Clone, Debug, Deserialize)]
+pub struct List {
+    // TODO
+}
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct XIDType {
     pub name: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct XIDUnion {
     pub name: String,
     #[serde(rename = "type")]
     pub types: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Typedef {
     #[serde(rename = "oldname")]
     pub ty: String,
@@ -143,21 +174,21 @@ pub struct Typedef {
     pub alias: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Enum {
     pub name: String,
     #[serde(rename = "item")]
     pub variants: Vec<Variant>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Variant {
     pub name: String,
     #[serde(rename = "$value")]
     pub item: VariantItem,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub enum VariantItem {
     #[serde(rename = "value")]
     Value(String),
@@ -165,7 +196,7 @@ pub enum VariantItem {
     Bit(u32),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Event {
     pub name: String,
     #[serde(rename = "number")]
@@ -174,7 +205,7 @@ pub struct Event {
     pub items: Vec<EventItem>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub enum EventItem {
     #[serde(rename = "field")]
     Field(Field),
@@ -186,34 +217,48 @@ pub enum EventItem {
     Doc(Doc),
 }
 
-#[derive(Debug, Deserialize)]
-pub struct Doc {}
+#[derive(Clone, Debug, Deserialize)]
+pub struct Doc {
+    // TODO
+}
 
-#[derive(Debug, Deserialize)]
-pub struct EventCopy {}
+#[derive(Clone, Debug, Deserialize)]
+pub struct EventCopy {
+    pub name: String,
+    #[serde(rename = "number")]
+    pub opcode: u8,
+    #[serde(rename = "ref")]
+    pub source: String,
+}
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Union {
     pub name: String,
     #[serde(rename = "list")]
     pub items: Vec<UnionItem>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct UnionItem {
     #[serde(rename = "type")]
     pub ty: String,
     #[serde(rename = "name")]
     pub name: String,
     #[serde(rename = "value")]
-    pub count: usize
+    pub count: usize,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct Error {}
+#[derive(Clone, Debug, Deserialize)]
+pub struct Error {
+    // TODO
+}
 
-#[derive(Debug, Deserialize)]
-pub struct ErrorCopy {}
+#[derive(Clone, Debug, Deserialize)]
+pub struct ErrorCopy {
+    // TODO
+}
 
-#[derive(Debug, Deserialize)]
-pub struct Request {}
+#[derive(Clone, Debug, Deserialize)]
+pub struct Request {
+    // TODO
+}

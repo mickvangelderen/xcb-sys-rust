@@ -6,6 +6,7 @@ use std::io;
 use std::io::prelude::*;
 use std::path;
 
+#[allow(unused)]
 mod xproto;
 
 struct Extra {
@@ -113,9 +114,6 @@ fn main() {
 
 #![allow(non_camel_case_types)]
 
-use std::fmt;
-use std::mem;
-
 "##,
     )
     .unwrap();
@@ -124,14 +122,14 @@ use std::mem;
         write_typedef(&mut out, &extra, &typedef).unwrap();
     }
 
-    for xidtype in root.items.iter().filter_map(xproto::RootItem::as_xidtype) {
-        write_xidtype(&mut out, &extra, &xidtype).unwrap();
+    for xid_type in root.items.iter().filter_map(xproto::RootItem::as_xid_type) {
+        write_xid_type(&mut out, &extra, &xid_type).unwrap();
     }
 
     writeln!(out).unwrap();
 
-    for xidunion in root.items.iter().filter_map(xproto::RootItem::as_xidunion) {
-        write_xidunion(&mut out, &extra, &xidunion).unwrap();
+    for xid_union in root.items.iter().filter_map(xproto::RootItem::as_xid_union) {
+        write_xid_union(&mut out, &extra, &xid_union).unwrap();
     }
 
     for union in root.items.iter().filter_map(xproto::RootItem::as_union) {
@@ -146,8 +144,34 @@ use std::mem;
         write_struct(&mut out, &extra, &struct_).unwrap();
     }
 
-    for event in root.items.iter().filter_map(xproto::RootItem::as_event) {
-        write_event(&mut out, &extra, &event).unwrap();
+    for item in root.items.iter() {
+        let event;
+
+        let event_ref = match *item {
+            xproto::RootItem::Event(ref event) => event,
+            xproto::RootItem::EventCopy(ref event_copy) => {
+                let source_event = root
+                    .items
+                    .iter()
+                    .filter_map(xproto::RootItem::as_event)
+                    .find(|event| event.name == event_copy.source)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "Could not find source event for event copy {:?}.",
+                            event_copy
+                        );
+                    });
+                event = xproto::Event {
+                    name: event_copy.name.clone(),
+                    opcode: event_copy.opcode,
+                    items: source_event.items.clone(),
+                };
+                &event
+            }
+            _ => continue,
+        };
+
+        write_event(&mut out, &extra, event_ref).unwrap();
     }
 }
 
@@ -166,33 +190,33 @@ fn write_typedef<W: io::Write>(
     Ok(())
 }
 
-fn write_xidtype<W: io::Write>(
+fn write_xid_type<W: io::Write>(
     out: &mut W,
     extra: &Extra,
-    xidtype: &xproto::XIDType,
+    xid_type: &xproto::XIDType,
 ) -> io::Result<()> {
     writeln!(
         out,
         "pub type {xcb_name} = {xlib_name};",
-        xcb_name = extra.get_xcb_type_name(&xidtype.name),
-        xlib_name = extra.get_xlib_name(&xidtype.name)
+        xcb_name = extra.get_xcb_type_name(&xid_type.name),
+        xlib_name = extra.get_xlib_name(&xid_type.name)
     )?;
     Ok(())
 }
 
-fn write_xidunion<W: io::Write>(
+fn write_xid_union<W: io::Write>(
     out: &mut W,
     extra: &Extra,
-    xidunion: &xproto::XIDUnion,
+    xid_union: &xproto::XIDUnion,
 ) -> io::Result<()> {
-    let union_name = extra.get_xcb_type_name(&xidunion.name);
+    let union_name = extra.get_xcb_type_name(&xid_union.name);
     writeln!(
         out,
         r##"#[repr(C)]
 pub union {name} {{"##,
         name = union_name
     )?;
-    for ty in &xidunion.types {
+    for ty in &xid_union.types {
         let xcb_ty = extra.get_xcb_type_name(ty);
         let field = &xcb_ty[4..xcb_ty.len() - 2];
         writeln!(out, "    pub {field}: {ty},", ty = xcb_ty, field = field)?;
@@ -205,11 +229,7 @@ pub union {name} {{"##,
     Ok(())
 }
 
-fn write_union<W: io::Write>(
-    out: &mut W,
-    extra: &Extra,
-    union: &xproto::Union,
-) -> io::Result<()> {
+fn write_union<W: io::Write>(out: &mut W, extra: &Extra, union: &xproto::Union) -> io::Result<()> {
     let union_name = extra.get_xcb_type_name(&union.name);
     writeln!(
         out,
@@ -219,7 +239,13 @@ pub union {name} {{"##,
     )?;
     for item in &union.items {
         let ty = extra.get_xcb_type_name(&item.ty);
-        writeln!(out, "    pub {name}: [{ty}; {count}],", ty = ty, name = item.name, count = item.count)?;
+        writeln!(
+            out,
+            "    pub {name}: [{ty}; {count}],",
+            ty = ty,
+            name = item.name,
+            count = item.count
+        )?;
     }
     writeln!(
         out,
@@ -276,7 +302,7 @@ fn write_struct<W: io::Write>(
     let mut pad_index = 0;
     writeln!(
         out,
-        r##"#[derive(Debug)]
+        r##"
 #[repr(C)]
 pub struct {name} {{"##,
         name = struct_name
@@ -309,7 +335,7 @@ pub struct {name} {{"##,
                     // this but that would mean recursively determining the
                     // sizes of the fields which would make this script a lot
                     // more complicated.
-                    println!("cargo:warning=Ignored align on {}", struct_name);
+                    println!("cargo:warning=Ignored align on {}.", struct_name);
                 }
             }
             xproto::StructItem::List(_) => {
@@ -333,9 +359,8 @@ fn write_event<W: io::Write>(out: &mut W, extra: &Extra, event: &xproto::Event) 
 
     writeln!(
         out,
-        r##"const {opcode_name}: u8 = {opcode};
+        r##"pub const {opcode_name}: u8 = {opcode};
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct {event_name} {{"##,
         opcode_name = opcode_name,
@@ -381,7 +406,7 @@ pub struct {event_name} {{"##,
                     // this but that would mean recursively determining the
                     // sizes of the fields which would make this script a lot
                     // more complicated.
-                    println!("cargo:warning=Ignored align on {}", event_name);
+                    println!("cargo:warning=Ignored align on {}.", event_name);
                 }
             }
             xproto::EventItem::List(_) => {

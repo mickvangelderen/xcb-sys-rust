@@ -2,9 +2,6 @@
 
 #![allow(non_camel_case_types)]
 
-use std::fmt;
-use std::mem;
-
 pub type xcb_bool32_t = u32;
 pub type xcb_visualid_t = u32;
 pub type xcb_timestamp_t = u32;
@@ -555,17 +552,20 @@ pub const XCB_MAP_INDEX_3: xcb_map_index_t = 5;
 pub const XCB_MAP_INDEX_4: xcb_map_index_t = 6;
 pub const XCB_MAP_INDEX_5: xcb_map_index_t = 7;
 
+
 #[repr(C)]
 pub struct xcb_char2b_t {
     pub byte1: u8,
     pub byte2: u8,
 }
 
+
 #[repr(C)]
 pub struct xcb_point_t {
     pub x: i16,
     pub y: i16,
 }
+
 
 #[repr(C)]
 pub struct xcb_rectangle_t {
@@ -574,6 +574,7 @@ pub struct xcb_rectangle_t {
     pub width: u16,
     pub height: u16,
 }
+
 
 #[repr(C)]
 pub struct xcb_arc_t {
@@ -585,6 +586,7 @@ pub struct xcb_arc_t {
     pub angle2: i16,
 }
 
+
 #[repr(C)]
 pub struct xcb_format_t {
     pub depth: u8,
@@ -592,6 +594,7 @@ pub struct xcb_format_t {
     pub scanline_pad: u8,
     pub _pad0: [u8; 5],
 }
+
 
 #[repr(C)]
 pub struct xcb_visualtype_t {
@@ -605,6 +608,7 @@ pub struct xcb_visualtype_t {
     pub _pad0: [u8; 4],
 }
 
+
 #[repr(C)]
 pub struct xcb_depth_t {
     pub depth: u8,
@@ -613,6 +617,7 @@ pub struct xcb_depth_t {
     pub _pad1: [u8; 4],
     // list
 }
+
 
 #[repr(C)]
 pub struct xcb_screen_t {
@@ -635,6 +640,7 @@ pub struct xcb_screen_t {
     // list
 }
 
+
 #[repr(C)]
 pub struct xcb_setup_request_t {
     pub byte_order: u8,
@@ -648,6 +654,7 @@ pub struct xcb_setup_request_t {
     // list
 }
 
+
 #[repr(C)]
 pub struct xcb_setup_failed_t {
     pub status: u8,
@@ -658,6 +665,7 @@ pub struct xcb_setup_failed_t {
     // list
 }
 
+
 #[repr(C)]
 pub struct xcb_setup_authenticate_t {
     pub status: u8,
@@ -665,6 +673,7 @@ pub struct xcb_setup_authenticate_t {
     pub length: u16,
     // list
 }
+
 
 #[repr(C)]
 pub struct xcb_setup_t {
@@ -693,6 +702,7 @@ pub struct xcb_setup_t {
     // list
 }
 
+
 #[repr(C)]
 pub struct xcb_timecoord_t {
     pub time: xcb_timestamp_t,
@@ -700,11 +710,13 @@ pub struct xcb_timecoord_t {
     pub y: i16,
 }
 
+
 #[repr(C)]
 pub struct xcb_fontprop_t {
     pub name: xcb_atom_t,
     pub value: u32,
 }
+
 
 #[repr(C)]
 pub struct xcb_charinfo_t {
@@ -716,11 +728,13 @@ pub struct xcb_charinfo_t {
     pub attributes: u16,
 }
 
+
 #[repr(C)]
 pub struct xcb_str_t {
     pub name_len: u8,
     // list
 }
+
 
 #[repr(C)]
 pub struct xcb_segment_t {
@@ -729,6 +743,7 @@ pub struct xcb_segment_t {
     pub x2: i16,
     pub y2: i16,
 }
+
 
 #[repr(C)]
 pub struct xcb_coloritem_t {
@@ -740,6 +755,7 @@ pub struct xcb_coloritem_t {
     pub _pad0: [u8; 1],
 }
 
+
 #[repr(C)]
 pub struct xcb_rgb_t {
     pub red: u16,
@@ -747,6 +763,7 @@ pub struct xcb_rgb_t {
     pub blue: u16,
     pub _pad0: [u8; 2],
 }
+
 
 #[repr(C)]
 pub struct xcb_host_t {
@@ -756,9 +773,8 @@ pub struct xcb_host_t {
     // list
 }
 
-const XCB_KEY_PRESS: u8 = 2;
+pub const XCB_KEY_PRESS: u8 = 2;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_key_press_event_t {
     pub detail: xcb_keycode_t,
@@ -775,9 +791,26 @@ pub struct xcb_key_press_event_t {
     pub _pad0: [u8; 1],
 }
 
-const XCB_BUTTON_PRESS: u8 = 4;
+pub const XCB_KEY_RELEASE: u8 = 3;
 
-#[derive(Debug)]
+#[repr(C)]
+pub struct xcb_key_release_event_t {
+    pub detail: xcb_keycode_t,
+    pub time: xcb_timestamp_t,
+    pub root: xcb_window_t,
+    pub event: xcb_window_t,
+    pub child: xcb_window_t,
+    pub root_x: i16,
+    pub root_y: i16,
+    pub event_x: i16,
+    pub event_y: i16,
+    pub state: u16,
+    pub same_screen: u8,
+    pub _pad0: [u8; 1],
+}
+
+pub const XCB_BUTTON_PRESS: u8 = 4;
+
 #[repr(C)]
 pub struct xcb_button_press_event_t {
     pub detail: xcb_button_t,
@@ -794,9 +827,26 @@ pub struct xcb_button_press_event_t {
     pub _pad0: [u8; 1],
 }
 
-const XCB_MOTION_NOTIFY: u8 = 6;
+pub const XCB_BUTTON_RELEASE: u8 = 5;
 
-#[derive(Debug)]
+#[repr(C)]
+pub struct xcb_button_release_event_t {
+    pub detail: xcb_button_t,
+    pub time: xcb_timestamp_t,
+    pub root: xcb_window_t,
+    pub event: xcb_window_t,
+    pub child: xcb_window_t,
+    pub root_x: i16,
+    pub root_y: i16,
+    pub event_x: i16,
+    pub event_y: i16,
+    pub state: u16,
+    pub same_screen: u8,
+    pub _pad0: [u8; 1],
+}
+
+pub const XCB_MOTION_NOTIFY: u8 = 6;
+
 #[repr(C)]
 pub struct xcb_motion_notify_event_t {
     pub detail: u8,
@@ -813,9 +863,8 @@ pub struct xcb_motion_notify_event_t {
     pub _pad0: [u8; 1],
 }
 
-const XCB_ENTER_NOTIFY: u8 = 7;
+pub const XCB_ENTER_NOTIFY: u8 = 7;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_enter_notify_event_t {
     pub detail: u8,
@@ -832,9 +881,26 @@ pub struct xcb_enter_notify_event_t {
     pub same_screen_focus: u8,
 }
 
-const XCB_FOCUS_IN: u8 = 9;
+pub const XCB_LEAVE_NOTIFY: u8 = 8;
 
-#[derive(Debug)]
+#[repr(C)]
+pub struct xcb_leave_notify_event_t {
+    pub detail: u8,
+    pub time: xcb_timestamp_t,
+    pub root: xcb_window_t,
+    pub event: xcb_window_t,
+    pub child: xcb_window_t,
+    pub root_x: i16,
+    pub root_y: i16,
+    pub event_x: i16,
+    pub event_y: i16,
+    pub state: u16,
+    pub mode: u8,
+    pub same_screen_focus: u8,
+}
+
+pub const XCB_FOCUS_IN: u8 = 9;
+
 #[repr(C)]
 pub struct xcb_focus_in_event_t {
     pub detail: u8,
@@ -843,17 +909,25 @@ pub struct xcb_focus_in_event_t {
     pub _pad0: [u8; 3],
 }
 
-const XCB_KEYMAP_NOTIFY: u8 = 11;
+pub const XCB_FOCUS_OUT: u8 = 10;
 
-#[derive(Debug)]
+#[repr(C)]
+pub struct xcb_focus_out_event_t {
+    pub detail: u8,
+    pub event: xcb_window_t,
+    pub mode: u8,
+    pub _pad0: [u8; 3],
+}
+
+pub const XCB_KEYMAP_NOTIFY: u8 = 11;
+
 #[repr(C)]
 pub struct xcb_keymap_notify_event_t {
     // list
 }
 
-const XCB_EXPOSE: u8 = 12;
+pub const XCB_EXPOSE: u8 = 12;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_expose_event_t {
     pub _pad0: [u8; 1],
@@ -866,9 +940,8 @@ pub struct xcb_expose_event_t {
     pub _pad1: [u8; 2],
 }
 
-const XCB_GRAPHICS_EXPOSURE: u8 = 13;
+pub const XCB_GRAPHICS_EXPOSURE: u8 = 13;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_graphics_exposure_event_t {
     pub _pad0: [u8; 1],
@@ -883,9 +956,8 @@ pub struct xcb_graphics_exposure_event_t {
     pub _pad1: [u8; 3],
 }
 
-const XCB_NO_EXPOSURE: u8 = 14;
+pub const XCB_NO_EXPOSURE: u8 = 14;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_no_exposure_event_t {
     pub _pad0: [u8; 1],
@@ -895,9 +967,8 @@ pub struct xcb_no_exposure_event_t {
     pub _pad1: [u8; 1],
 }
 
-const XCB_VISIBILITY_NOTIFY: u8 = 15;
+pub const XCB_VISIBILITY_NOTIFY: u8 = 15;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_visibility_notify_event_t {
     pub _pad0: [u8; 1],
@@ -906,9 +977,8 @@ pub struct xcb_visibility_notify_event_t {
     pub _pad1: [u8; 3],
 }
 
-const XCB_CREATE_NOTIFY: u8 = 16;
+pub const XCB_CREATE_NOTIFY: u8 = 16;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_create_notify_event_t {
     pub _pad0: [u8; 1],
@@ -923,9 +993,8 @@ pub struct xcb_create_notify_event_t {
     pub _pad1: [u8; 1],
 }
 
-const XCB_DESTROY_NOTIFY: u8 = 17;
+pub const XCB_DESTROY_NOTIFY: u8 = 17;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_destroy_notify_event_t {
     pub _pad0: [u8; 1],
@@ -933,9 +1002,8 @@ pub struct xcb_destroy_notify_event_t {
     pub window: xcb_window_t,
 }
 
-const XCB_UNMAP_NOTIFY: u8 = 18;
+pub const XCB_UNMAP_NOTIFY: u8 = 18;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_unmap_notify_event_t {
     pub _pad0: [u8; 1],
@@ -945,9 +1013,8 @@ pub struct xcb_unmap_notify_event_t {
     pub _pad1: [u8; 3],
 }
 
-const XCB_MAP_NOTIFY: u8 = 19;
+pub const XCB_MAP_NOTIFY: u8 = 19;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_map_notify_event_t {
     pub _pad0: [u8; 1],
@@ -957,9 +1024,8 @@ pub struct xcb_map_notify_event_t {
     pub _pad1: [u8; 3],
 }
 
-const XCB_MAP_REQUEST: u8 = 20;
+pub const XCB_MAP_REQUEST: u8 = 20;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_map_request_event_t {
     pub _pad0: [u8; 1],
@@ -967,9 +1033,8 @@ pub struct xcb_map_request_event_t {
     pub window: xcb_window_t,
 }
 
-const XCB_REPARENT_NOTIFY: u8 = 21;
+pub const XCB_REPARENT_NOTIFY: u8 = 21;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_reparent_notify_event_t {
     pub _pad0: [u8; 1],
@@ -982,9 +1047,8 @@ pub struct xcb_reparent_notify_event_t {
     pub _pad1: [u8; 3],
 }
 
-const XCB_CONFIGURE_NOTIFY: u8 = 22;
+pub const XCB_CONFIGURE_NOTIFY: u8 = 22;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_configure_notify_event_t {
     pub _pad0: [u8; 1],
@@ -1000,9 +1064,8 @@ pub struct xcb_configure_notify_event_t {
     pub _pad1: [u8; 1],
 }
 
-const XCB_CONFIGURE_REQUEST: u8 = 23;
+pub const XCB_CONFIGURE_REQUEST: u8 = 23;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_configure_request_event_t {
     pub stack_mode: u8,
@@ -1017,9 +1080,8 @@ pub struct xcb_configure_request_event_t {
     pub value_mask: u16,
 }
 
-const XCB_GRAVITY_NOTIFY: u8 = 24;
+pub const XCB_GRAVITY_NOTIFY: u8 = 24;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_gravity_notify_event_t {
     pub _pad0: [u8; 1],
@@ -1029,9 +1091,8 @@ pub struct xcb_gravity_notify_event_t {
     pub y: i16,
 }
 
-const XCB_RESIZE_REQUEST: u8 = 25;
+pub const XCB_RESIZE_REQUEST: u8 = 25;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_resize_request_event_t {
     pub _pad0: [u8; 1],
@@ -1040,9 +1101,8 @@ pub struct xcb_resize_request_event_t {
     pub height: u16,
 }
 
-const XCB_CIRCULATE_NOTIFY: u8 = 26;
+pub const XCB_CIRCULATE_NOTIFY: u8 = 26;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_circulate_notify_event_t {
     pub _pad0: [u8; 1],
@@ -1053,9 +1113,20 @@ pub struct xcb_circulate_notify_event_t {
     pub _pad2: [u8; 3],
 }
 
-const XCB_PROPERTY_NOTIFY: u8 = 28;
+pub const XCB_CIRCULATE_REQUEST: u8 = 27;
 
-#[derive(Debug)]
+#[repr(C)]
+pub struct xcb_circulate_request_event_t {
+    pub _pad0: [u8; 1],
+    pub event: xcb_window_t,
+    pub window: xcb_window_t,
+    pub _pad1: [u8; 4],
+    pub place: u8,
+    pub _pad2: [u8; 3],
+}
+
+pub const XCB_PROPERTY_NOTIFY: u8 = 28;
+
 #[repr(C)]
 pub struct xcb_property_notify_event_t {
     pub _pad0: [u8; 1],
@@ -1066,9 +1137,8 @@ pub struct xcb_property_notify_event_t {
     pub _pad1: [u8; 3],
 }
 
-const XCB_SELECTION_CLEAR: u8 = 29;
+pub const XCB_SELECTION_CLEAR: u8 = 29;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_selection_clear_event_t {
     pub _pad0: [u8; 1],
@@ -1077,9 +1147,8 @@ pub struct xcb_selection_clear_event_t {
     pub selection: xcb_atom_t,
 }
 
-const XCB_SELECTION_REQUEST: u8 = 30;
+pub const XCB_SELECTION_REQUEST: u8 = 30;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_selection_request_event_t {
     pub _pad0: [u8; 1],
@@ -1091,9 +1160,8 @@ pub struct xcb_selection_request_event_t {
     pub property: xcb_atom_t,
 }
 
-const XCB_SELECTION_NOTIFY: u8 = 31;
+pub const XCB_SELECTION_NOTIFY: u8 = 31;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_selection_notify_event_t {
     pub _pad0: [u8; 1],
@@ -1104,9 +1172,8 @@ pub struct xcb_selection_notify_event_t {
     pub property: xcb_atom_t,
 }
 
-const XCB_COLORMAP_NOTIFY: u8 = 32;
+pub const XCB_COLORMAP_NOTIFY: u8 = 32;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_colormap_notify_event_t {
     pub _pad0: [u8; 1],
@@ -1117,9 +1184,8 @@ pub struct xcb_colormap_notify_event_t {
     pub _pad1: [u8; 2],
 }
 
-const XCB_CLIENT_MESSAGE: u8 = 33;
+pub const XCB_CLIENT_MESSAGE: u8 = 33;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_client_message_event_t {
     pub format: u8,
@@ -1128,9 +1194,8 @@ pub struct xcb_client_message_event_t {
     pub data: xcb_client_message_data_t,
 }
 
-const XCB_MAPPING_NOTIFY: u8 = 34;
+pub const XCB_MAPPING_NOTIFY: u8 = 34;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_mapping_notify_event_t {
     pub _pad0: [u8; 1],
@@ -1140,9 +1205,8 @@ pub struct xcb_mapping_notify_event_t {
     pub _pad1: [u8; 1],
 }
 
-const XCB_GE_GENERIC: u8 = 35;
+pub const XCB_GE_GENERIC: u8 = 35;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct xcb_ge_generic_event_t {
     pub _pad0: [u8; 22],
