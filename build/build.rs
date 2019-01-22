@@ -163,7 +163,7 @@ fn main() {
                     });
                 event = xproto::Event {
                     name: event_copy.name.clone(),
-                    opcode: event_copy.opcode,
+                    code: event_copy.code,
                     items: source_event.items.clone(),
                 };
                 &event
@@ -172,6 +172,14 @@ fn main() {
         };
 
         write_event(&mut out, &extra, event_ref).unwrap();
+    }
+
+    for error in root.items.iter().filter_map(xproto::RootItem::as_error) {
+        write_error(&mut out, &extra, &error).unwrap();
+    }
+
+    for error_copy in root.items.iter().filter_map(xproto::RootItem::as_error_copy) {
+        write_error_copy(&mut out, &extra, &error_copy).unwrap();
     }
 }
 
@@ -353,18 +361,18 @@ pub struct {name} {{"##,
 }
 
 fn write_event<W: io::Write>(out: &mut W, extra: &Extra, event: &xproto::Event) -> io::Result<()> {
-    let opcode_name = format!("XCB_{}", event.name.to_shouty_snake_case());
+    let code_name = format!("XCB_{}", event.name.to_shouty_snake_case());
     let event_name = format!("xcb_{}_event_t", event.name.to_snake_case());
     let mut pad_index = 0;
 
     writeln!(
         out,
-        r##"pub const {opcode_name}: u8 = {opcode};
+        r##"pub const {code_name}: u8 = {code};
 
 #[repr(C)]
 pub struct {event_name} {{"##,
-        opcode_name = opcode_name,
-        opcode = event.opcode,
+        code_name = code_name,
+        code = event.code,
         event_name = event_name,
     )?;
 
@@ -424,6 +432,92 @@ pub struct {event_name} {{"##,
         out,
         r"}}
 "
+    )?;
+    Ok(())
+}
+
+fn write_error<W: io::Write>(out: &mut W, extra: &Extra, error: &xproto::Error) -> io::Result<()> {
+    let code_name = format!("XCB_{}", error.name.to_shouty_snake_case());
+    let error_name = format!("xcb_{}_error_t", error.name.to_snake_case());
+    let mut pad_index = 0;
+
+    writeln!(
+        out,
+        r##"pub const {code_name}: u8 = {code};
+
+#[repr(C)]
+pub struct {error_name} {{"##,
+        code_name = code_name,
+        code = error.code,
+        error_name = error_name,
+    )?;
+
+    for item in error.items.iter() {
+        match item {
+            xproto::ErrorItem::Field(field) => {
+                // NOTE(mickvangelderen): Don't want to make a file and hash map
+                // and everything just for this one exception.
+                // TODO(mickvangelderen): Should have one function somewhere to
+                // determine the identifier for a type, a field name, etc.
+                let field_name = if field.name == "type" {
+                    "ty"
+                } else {
+                    &field.name
+                };
+
+                let field_ty = extra.get_xcb_type_name(&field.ty);
+                writeln!(
+                    out,
+                    "    pub {name}: {ty},",
+                    name = field_name,
+                    ty = field_ty,
+                )?;
+            }
+            xproto::ErrorItem::Pad(pad) => {
+                if let Some(ref bytes) = pad.bytes {
+                    writeln!(
+                        out,
+                        "    pub _pad{index}: [u8; {bytes}],",
+                        index = pad_index,
+                        bytes = bytes
+                    )?;
+                    pad_index += 1;
+                }
+                if let Some(_) = pad.align {
+                    // NOTE(mickvangelderen): align property is not documented
+                    // in the xproto xml specification and it seems like the
+                    // padding already properly aligns the fields. Could verify
+                    // this but that would mean recursively determining the
+                    // sizes of the fields which would make this script a lot
+                    // more complicated.
+                    println!("cargo:warning=Ignored align on {}.", error_name);
+                }
+            }
+        }
+    }
+
+    writeln!(
+        out,
+        r"}}
+"
+    )?;
+    Ok(())
+}
+
+fn write_error_copy<W: io::Write>(out: &mut W, extra: &Extra, error_copy: &xproto::ErrorCopy) -> io::Result<()> {
+    let code_name = format!("XCB_{}", error_copy.name.to_shouty_snake_case());
+    let alias = format!("xcb_{}_error_t", error_copy.name.to_snake_case());
+    let ty = format!("xcb_{}_error_t", error_copy.source.to_snake_case());
+    writeln!(
+        out,
+        r##"pub const {code_name}: u8 = {code};
+
+pub type {alias} = {ty};
+"##,
+        code_name = code_name,
+        code = error_copy.code,
+        alias = alias,
+        ty = ty,
     )?;
     Ok(())
 }

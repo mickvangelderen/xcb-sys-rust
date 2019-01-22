@@ -200,7 +200,7 @@ pub enum VariantItem {
 pub struct Event {
     pub name: String,
     #[serde(rename = "number")]
-    pub opcode: u8,
+    pub code: u8,
     #[serde(rename = "$value")]
     pub items: Vec<EventItem>,
 }
@@ -226,7 +226,7 @@ pub struct Doc {
 pub struct EventCopy {
     pub name: String,
     #[serde(rename = "number")]
-    pub opcode: u8,
+    pub code: u8,
     #[serde(rename = "ref")]
     pub source: String,
 }
@@ -250,12 +250,28 @@ pub struct UnionItem {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Error {
-    // TODO
+    pub name: String,
+    #[serde(rename = "number")]
+    pub code: u8,
+    #[serde(rename = "$value")]
+    pub items: Vec<ErrorItem>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub enum ErrorItem {
+    #[serde(rename = "field")]
+    Field(Field),
+    #[serde(rename = "pad")]
+    Pad(Pad),
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ErrorCopy {
-    // TODO
+    pub name: String,
+    #[serde(rename = "number")]
+    pub code: u8,
+    #[serde(rename = "ref")]
+    pub source: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]

@@ -1212,3 +1212,83 @@ pub struct xcb_ge_generic_event_t {
     pub _pad0: [u8; 22],
 }
 
+pub const XCB_REQUEST: u8 = 1;
+
+#[repr(C)]
+pub struct xcb_request_error_t {
+    pub bad_value: u32,
+    pub minor_opcode: u16,
+    pub major_opcode: u8,
+    pub _pad0: [u8; 1],
+}
+
+pub const XCB_VALUE: u8 = 2;
+
+#[repr(C)]
+pub struct xcb_value_error_t {
+    pub bad_value: u32,
+    pub minor_opcode: u16,
+    pub major_opcode: u8,
+    pub _pad0: [u8; 1],
+}
+
+pub const XCB_WINDOW: u8 = 3;
+
+pub type xcb_window_error_t = xcb_value_error_t;
+
+pub const XCB_PIXMAP: u8 = 4;
+
+pub type xcb_pixmap_error_t = xcb_value_error_t;
+
+pub const XCB_ATOM: u8 = 5;
+
+pub type xcb_atom_error_t = xcb_value_error_t;
+
+pub const XCB_CURSOR: u8 = 6;
+
+pub type xcb_cursor_error_t = xcb_value_error_t;
+
+pub const XCB_FONT: u8 = 7;
+
+pub type xcb_font_error_t = xcb_value_error_t;
+
+pub const XCB_MATCH: u8 = 8;
+
+pub type xcb_match_error_t = xcb_request_error_t;
+
+pub const XCB_DRAWABLE: u8 = 9;
+
+pub type xcb_drawable_error_t = xcb_value_error_t;
+
+pub const XCB_ACCESS: u8 = 10;
+
+pub type xcb_access_error_t = xcb_request_error_t;
+
+pub const XCB_ALLOC: u8 = 11;
+
+pub type xcb_alloc_error_t = xcb_request_error_t;
+
+pub const XCB_COLORMAP: u8 = 12;
+
+pub type xcb_colormap_error_t = xcb_value_error_t;
+
+pub const XCB_G_CONTEXT: u8 = 13;
+
+pub type xcb_g_context_error_t = xcb_value_error_t;
+
+pub const XCB_ID_CHOICE: u8 = 14;
+
+pub type xcb_id_choice_error_t = xcb_value_error_t;
+
+pub const XCB_NAME: u8 = 15;
+
+pub type xcb_name_error_t = xcb_request_error_t;
+
+pub const XCB_LENGTH: u8 = 16;
+
+pub type xcb_length_error_t = xcb_request_error_t;
+
+pub const XCB_IMPLEMENTATION: u8 = 17;
+
+pub type xcb_implementation_error_t = xcb_request_error_t;
+
